@@ -22,7 +22,7 @@ Source6:	%{name}.README
 Source7:	%{name}.init
 Source8:	%{name}.service
 Source9:	%{name}.tune
-Source10:	%{name}.README.fork
+Source10:	%{name}.README.forking
 Source11:	%{name}.logrotate
 
 BuildRequires:	openssl-devel
@@ -54,7 +54,7 @@ about everything.
 
 # Extra documentation.
 cp %{SOURCE6} %{_builddir}/%{name}-%{version}/README
-cp %{SOURCE10} %{_builddir}/%{name}-%{version}/README.fork
+cp %{SOURCE10} %{_builddir}/%{name}-%{version}/README.forking
 
 %build
 %configure \
