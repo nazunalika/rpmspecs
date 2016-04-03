@@ -1,0 +1,6 @@
+/var/log/unrealircd/unrealircd.log {
+    missingok
+    notifempty
+    weekly
+    create 0600 unrealircd unrealircd
+}

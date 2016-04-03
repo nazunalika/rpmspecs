@@ -1,0 +1,246 @@
+#!/bin/bash
+#
+# unrealircd
+#
+# chkconfig: 2345 90 10
+# description: UnrealIRCd is an advanced IRC server.
+# processname: unrealircd
+# pidfile: /var/run/unrealircd/ircd.pid
+# config: /etc/unrealircd
+#
+# 29/03/2016: Created initial init script
+# 30/03/2016: Restructured to actual FHS and non-symlinked 
+#             paths <louis@shootthej.net>
+# 02/04/2015: Ensured that reload was reloading both ssl certs
+#             and rehashing the configuration. Created reloadssl
+#             and left rehash as a potential option.
+
+### BEGIN INIT INFO
+# Provides: ircd
+# Required-Start: $local_fs $network $remote_fs
+# Required-Stop: $local_fs $network $remote_fs
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop unrealircd
+# Description: UnrealIRCd is an advanced IRC server.
+### END INIT INFO
+
+. /etc/rc.d/init.d/functions
+
+RUNAS="unrealircd"
+ircd="/usr/bin/unrealircd"
+prog="unrealircd"
+pidfile="/var/run/unrealircd/ircd.pid"
+lockfile="/var/lock/subsys/$prog"
+tmpdir="/var/tmp/$prog"
+
+# UnrealIRCd tends to stop in a fast amount of time. This is
+#  just in case, because a restart may be too fast here.
+STOP_TIMEOUT=5
+RETVAL=0
+
+checktmp(){
+	if [ ! -d $tmpdir ]; then
+		mkdir -p $tmpdir
+		chown $RUNAS:$RUNAS $tmpdir
+		chmod 0700 $tmpdir
+	fi
+}
+
+start(){
+	echo -n $"Starting $prog: "
+	daemon --pidfile=${pidfile} --user=${RUNAS} $ircd
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && touch ${lockfile}
+	return $RETVAL
+}
+stop(){
+	echo -n $"Stopping $prog: "
+	killproc -p ${pidfile} -d ${STOP_TIMEOUT} $ircd
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && rm -f ${lockfile} ${pidfile}
+}
+
+## Reload and rehash were two separate functions in the original
+## wrapper script. However, I'm leaving the reload function named
+## what it is here. If reloadssl gets called, reload will get
+## called. If reload gets called, reload and rehash are called.
+
+reload(){
+	echo -n $"Reloading $prog: "
+	if [ ! -f ${pidfile} ]; then
+		echo "Service not running."
+		exit 1
+	else
+		killproc -p ${pidfile} $ircd -USR1
+		RETVAL=$?
+	fi
+}
+
+rehash(){
+	echo -n $"Rehasing $prog: "
+	if [ ! -f ${pidfile} ]; then
+		echo "Service not running."
+		exit 1
+	else
+		killproc -p ${pidfile} $ircd -HUP
+		RETVAL=$?
+	fi
+}
+
+mkpasswd(){
+	/usr/bin/unrealircd -P $2 $3
+	exit 0
+}
+
+version(){
+	/usr/bin/unrealircd -v
+	exit 0
+}
+
+gencloak(){
+	/usr/bin/unrealircd -k
+	exit 0
+}
+
+upgrade-conf(){
+	/usr/bin/unrealircd -U
+	RETVAL=$?
+	exit $?
+}
+
+backtrace() {
+	cd /var/tmp
+	modpath="/usr/lib64/unrealircd"
+
+	echo "Core files available:"
+	n=0
+	for i in `echo *core*`; do
+		ls -l $i
+		n=`expr $n + 1`
+	done
+
+	if [ "$n" -gt 1 ]; then
+                echo "Type the name of the core file you want to research:"
+                read corefile
+        elif [ "$i" = "*core*" -o "$n" -eq 0 ]; then
+                echo 'No core files found... Nothing to do'
+                echo ''
+                echo 'If you are sure UnrealIRCd crashed, then verify that unreal'
+                echo 'has permission to dump core (type "ulimit -c unlimited" and see'
+                echo 'if you get permission denied errors). Also verify that you did'
+                echo 'not run out of quota.'
+                echo 'If all that is ok, then it might be that UnrealIRCd did not crash but'
+                echo 'got killed by the OS (eg: cpu/mem resource limits), the syadmin,'
+                echo 'or an automated process.'
+                exit 1
+        else
+                corefile="$i"
+        fi
+
+        if [ ! -f "$corefile" ]; then
+                echo "Core file '$corefile' not found"
+        fi
+        if [ ! -s "$corefile" ]; then
+                echo 'Seems the corefile is 0 bytes'
+                echo 'This usually means you need to relax the core file resource limit'
+                echo '(type "ulimit -c unlimited"), or you might have ran out of quota.'
+                exit 1
+        fi
+
+	echo 'info sharedlibrary'|gdb /usr/bin/unrealircd $corefile 2>/dev/null|\
+        grep No|grep tmp/|awk '{ print $2 }'|\
+        awk -F '.' "{ system(\"[ -f $modpath/\" \$2 \"/\" \$3 \".so ] && ln -s $modpath/\" \$2 \"/\" \$3 \".so \" \$0 \" || ln -s $modpath/\" \$2 \".so \" \$0) }"
+
+        echo ""
+        echo "=================== START HERE ======================"
+        echo "BACKTRACE:"
+
+cat >/var/tmp/gdb.commands << __EOF__
+bt
+echo \n
+frame
+echo \n
+x/s backupbuf
+echo \n
+bt 3 full
+quit
+__EOF__
+
+        gdb -batch -x /var/tmp/gdb.commands /usr/bin/unrealircd $corefile
+        rm -f /var/tmp/gdb.commands
+        echo "GCC: `gcc -v 2>&1|tail -n 1`"
+        echo "UNAME: `uname -a`"
+        echo "UNREAL: `$0 version`"
+        echo "CORE: `ls -al $corefile`"
+        echo "===================  STOP HERE ======================"
+        echo ""
+        echo "Copy the parts between the START HERE and STOP HERE marker"
+        echo "and report it on http://bugs.unrealircd.org/"
+        echo ""
+        echo 'But before you do, note the following:'
+        echo '1. We do not support modifications of any unrealircd code'
+        echo '   (except for config.h changes).'
+        echo '2. If you are using 3rd party modules we might request you'
+        echo '   to run without them and verify you still crash. This is'
+        echo '   to eleminate any loss of time due to bugs made by others'
+        echo '3. Always use the latest UnrealIRCd version, we fix (crash)bugs'
+        echo '   all the time so your bug might as well be fixed already.'
+        echo ""
+        echo "Thanks!"
+}
+
+case "$1" in
+	start)
+		checktmp
+		start
+		;;
+	stop)
+		stop
+		;;
+	status)
+		status -p ${pidfile} $ircd
+		RETVAL=$?
+		;;
+	restart)
+		stop
+		checktmp
+		start
+		;;
+	rehash)
+		rehash
+		;;
+	reloadssl)
+		reload
+		;;
+	reload)
+		reload
+		echo
+		sleep 1
+		rehash
+		echo
+		;;
+	version)
+		version
+		;;
+	mkpasswd)
+		mkpasswd
+		;;
+	gencloak)
+		gencloak
+		;;
+	upgrade-conf)
+		upgrade-conf
+		;;
+	backtrace)
+		backtrace
+		;;
+	*)
+		echo "Usage: $prog {start|stop|restart|reload|status|rehash|reloadssl|mkpasswd|version|gencloak|upgrade-conf|backtrace}"
+		RETVAL=2
+		;;
+esac
+
+exit $RETVAL

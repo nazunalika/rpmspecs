@@ -1,0 +1,195 @@
+#!/bin/bash
+# unrealircd utility script
+# Created by: nazunalika (tucklesepk@gmail.com)
+
+# If this variable has no value, some functions will not work
+# The checkpid function exists for this reason.
+IRCPID=`pgrep unrealircd`
+tmpdir="/var/tmp/unrealircd"
+
+if [ $UID -eq 0 ] || [[ $USER != "unrealircd" ]]; then 
+	echo "Please run this with sudo -u unrealircd"
+	echo
+	echo "Exiting."
+	exit 1
+fi
+
+checktmp(){
+	if [ ! -d ${tmpdir} ]; then
+		mkdir -p ${tmpdir}
+		chmod 0700 ${tmpdir}
+	fi
+}
+
+checkpid(){
+	if [ -z $IRCPID ]; then
+		echo "Service is not online."
+		echo "Exiting."
+		exit 1
+	fi
+}
+
+## Rehash and reload are both used when "reload" is called
+## against this script. That way systemctl reload unrealircd
+## can be called without much of a hassle. 
+rehash(){
+	kill -1 $IRCPID
+}
+
+reload(){
+	kill -USR1 $IRCPID
+}
+
+mkpasswd(){
+	/usr/bin/unrealircd -P $2 $3
+}
+
+gencloak(){
+	/usr/bin/unrealircd -k
+}
+
+backtrace() {
+	cd /var/tmp
+	modpath="/usr/lib64/unrealircd"
+
+	echo "Core files available:"
+	n=0
+	for i in `echo *core*`; do
+		ls -l $i
+		n=`expr $n + 1`
+	done
+
+	if [ "$n" -gt 1 ]; then
+                echo "Type the name of the core file you want to research:"
+                read corefile
+        elif [ "$i" = "*core*" -o "$n" -eq 0 ]; then
+                echo 'No core files found... Nothing to do'
+                echo ''
+                echo 'If you are sure UnrealIRCd crashed, then verify that unreal'
+                echo 'has permission to dump core (type "ulimit -c unlimited" and see'
+                echo 'if you get permission denied errors). Also verify that you did'
+                echo 'not run out of quota.'
+                echo 'If all that is ok, then it might be that UnrealIRCd did not crash but'
+                echo 'got killed by the OS (eg: cpu/mem resource limits), the syadmin,'
+                echo 'or an automated process.'
+                exit 1
+        else
+                corefile="$i"
+        fi
+
+        if [ ! -f "$corefile" ]; then
+                echo "Core file '$corefile' not found"
+        fi
+        if [ ! -s "$corefile" ]; then
+                echo 'Seems the corefile is 0 bytes'
+                echo 'This usually means you need to relax the core file resource limit'
+                echo '(type "ulimit -c unlimited"), or you might have ran out of quota.'
+                exit 1
+        fi
+
+	echo 'info sharedlibrary'|gdb /usr/bin/unrealircd $corefile 2>/dev/null|\
+        grep No|grep tmp/|awk '{ print $2 }'|\
+        awk -F '.' "{ system(\"[ -f $modpath/\" \$2 \"/\" \$3 \".so ] && ln -s $modpath/\" \$2 \"/\" \$3 \".so \" \$0 \" || ln -s $modpath/\" \$2 \".so \" \$0) }"
+
+        echo ""
+        echo "=================== START HERE ======================"
+        echo "BACKTRACE:"
+
+cat >/var/tmp/gdb.commands << __EOF__
+bt
+echo \n
+frame
+echo \n
+x/s backupbuf
+echo \n
+bt 3 full
+quit
+__EOF__
+
+        gdb -batch -x /var/tmp/gdb.commands /usr/bin/unrealircd $corefile
+        rm -f /var/tmp/gdb.commands
+        echo "GCC: `gcc -v 2>&1|tail -n 1`"
+        echo "UNAME: `uname -a`"
+        echo "UNREAL: `$0 version`"
+        echo "CORE: `ls -al $corefile`"
+        echo "===================  STOP HERE ======================"
+        echo ""
+        echo "Copy the parts between the START HERE and STOP HERE marker"
+        echo "and report it on http://bugs.unrealircd.org/"
+        echo ""
+        echo 'But before you do, note the following:'
+        echo '1. We do not support modifications of any unrealircd code'
+        echo '   (except for config.h changes).'
+        echo '2. If you are using 3rd party modules we might request you'
+        echo '   to run without them and verify you still crash. This is'
+        echo '   to eleminate any loss of time due to bugs made by others'
+        echo '3. Always use the latest UnrealIRCd version, we fix (crash)bugs'
+        echo '   all the time so your bug might as well be fixed already.'
+        echo ""
+        echo "Thanks!"
+}
+
+upgrade-conf(){
+	/usr/bin/unrealircd -U
+}
+
+version(){
+	/usr/bin/unrealircd -v
+}
+
+case "$1" in
+	start)
+		checktmp
+		/usr/bin/unrealircd -F
+		#echo "Please use systemctl or service to start the service."
+		;;
+	stop)
+		kill -TERM $IRCPID
+		#echo "Please use systemctl or service to stop the service."
+		;;
+	status)
+		checkpid
+		echo "Running at $IRCPID"
+		;;
+	restart)
+		echo "WARNING: If you are invoking this outside of systemd, you"
+		echo "         may end up seeing strange results."
+		kill -TERM $IRCPID
+		sleep 1
+		/usr/bin/unrealircd -F
+		;;
+	rehash)
+		checkpid
+		rehash
+		;;
+	reloadssl)
+		checkpid
+		reload
+		;;
+	reload)
+		checkpid
+		reload
+		sleep 1
+		rehash
+		;;
+	version)
+		version
+		;;
+	mkpasswd)
+		mkpasswd
+		;;
+	gencloak)
+		gencloak
+		;;
+	upgrade-conf)
+		upgrade-conf
+		;;
+	backtrace)
+		backtrace
+		;;
+	*)
+		echo "Usage: $prog {start|stop|restart|reload|status|rehash|mkpasswd|version|gencloak|upgrade-conf|backtrace}"
+		RETVAL=2
+		;;
+esac
+

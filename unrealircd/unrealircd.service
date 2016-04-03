@@ -1,0 +1,14 @@
+[Unit]
+Description=Unreal IRC daemon
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=simple
+User=unrealircd
+ExecStart=/usr/libexec/unrealircd/ircdutil start
+ExecStop=/usr/libexec/unrealircd/ircdutil stop
+ExecReload=/usr/libexec/unrealircd/ircdutil reload
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

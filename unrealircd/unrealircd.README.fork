@@ -1,0 +1,24 @@
+To make the process fork as expected under a systemd system, do the following.
+
+    # cp /usr/lib/systemd/system/unrealircd.service
+    # vi /etc/systemd/system/unrealircd.service
+    ## make the following changes
+    [Unit]
+    Description=IRC daemon
+    After=network.target remote-fs.target nss-lookup.target
+
+    [Service]
+    Type=forking
+    User=unrealircd
+    PIDFile=/run/unrealircd/ircd.pid
+    ExecStart=/usr/bin/unrealircd
+
+    [Install]
+    WantedBy=multi-user.target
+
+    # systemctl daemon-reload
+
+    # vi /etc/tmpfiles.d/unrealircd.conf
+    d /run/unrealircd 0755 unrealircd root -
+
+
