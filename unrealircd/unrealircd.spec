@@ -3,7 +3,7 @@
 %global major_version 4
 %global minor_version 0
 %global micro_version 2
-%global build_with_plugins 1
+%global build_with_plugins 0
 
 Name:		unrealircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
