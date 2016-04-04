@@ -137,6 +137,26 @@ Do you support other architectures/Can it build in $ARCH architecture?
 
 I only have x86 systems, so I'm unable to try it out on ARM, PPC64, etc. However, if you want to take my srpm and try, go for it. I would love to see the results. If it works, I will add the architecture to the copr repo.
 
+How do you handle plugins?
+++++++++++++++++++++++++++
+
+I have multiple subpackages that get built along with unrealircd, to ensure they are built altogether and installed on a as-needed basis. I have provided a -devel package if you plan on building your own modules as well or have others you wish to compile against this.
+
+**Special Note:** If you plan on doing your own build by taking my spec here, you will need to set the "build_with_plugins" to 0, otherwise you WILL be required to download every plugin that I build with unrealircd to get the sources. This will be much easier if you grab my srpm by itself. This is especially the case since the plugins do not get updated very often. For this git, by default, I have set that option to 0. 
+
+The plugins I have built with this RPM are below.
+
+* AntiRandom
+* TextBan
+* NoCodes
+* PrivDeaf
+* JumpServer
+* m_ircops
+* m_staff
+* m_banlink
+
+The versions of the plugins are "skewed" in that they match the version of UnrealIRCd. At some point, I'll fix this unless someone else does first.
+
 I'd like to contribute to this or make a change...
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
