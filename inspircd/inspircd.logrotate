@@ -1,0 +1,12 @@
+/var/log/inspircd/inspircd.log {
+        weekly
+	notifempty
+        missingok
+        create 0600 inspircd inspircd
+        rotate 7
+        compress
+        delaycompress
+        postrotate
+		/sbin/service inspircd reload
+	endscript
+}

@@ -1,0 +1,68 @@
+#!/bin/bash
+# inspircd utility script
+# Created by: nazunalika (tucklesepk@gmail.com)
+
+# If this variable has no value, some functions will not work
+# The checkpid function exists for this reason.
+
+IRCPID=`pgrep inspircd`
+
+if [ $UID -eq 0 ] || [[ $USER != "inspircd" ]]; then
+	echo "Please run this with sudo -u inspircd"
+	echo
+	echo "Exiting."
+	exit 1
+fi
+
+checkpid(){
+	if [ -z $IRCPID ]; then
+		echo "Service is not online."
+		echo "Exiting."
+		exit 1
+	fi
+}
+
+case "$1" in
+	start)
+		/usr/bin/inspircd --nofork
+		;;
+	stop)
+		kill -TERM $IRCPID
+		;;
+	status)
+		checkpid
+		echo "Running at $IRCPID"
+		;;
+	restart)
+		echo "WARNING: If you are invoking this outside of systemd, you"
+		echo "         may end up seeing strange results."
+		kill -TERM $IRCPID
+		sleep 1
+		/usr/bin/inspircd --nofork
+		;;
+	reload)
+		checkpid
+		echo "NOTE: Reloading and Rehashing are the same thing."
+		kill -HUP $IRCPID
+		;;
+	rehash)
+		checkpid
+		echo "NOTE: Reloading and Rehashing are the same thing."
+		kill -HUP $IRCPID
+		;;
+	version)
+		/usr/bin/inspircd --version
+		;;
+	debug)
+		echo "All debug functions are in the inspircd script provided by"
+		echo "the inspircd developers in /usr/share/inspircd/bin."
+		echo ""
+		echo "Use sudo -u inspircd to run it."
+		exit 2
+		;;
+	*)
+		echo "Usage: InspIRCd {start|stop|restart|reload|status|rehash|reload|version|debug}"
+		RETVAL=2
+		;;
+esac
+

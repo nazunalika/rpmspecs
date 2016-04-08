@@ -1,0 +1,36 @@
+# InspIRCd Server - 2.0.21
+# http://www.inspircd.org/ - Latest stable version always available here.
+#
+# Info: Package maintainer is not responsible for server damage. Use of this
+#       package and/or software is at the risk of the end user. Please submit
+#       all package or related issues at github.com/nazunalika.
+
+Here are some things you may want to know about this about this packaged version
+of InspIRCd.
+
+ -> InspIRCd may not support you directly. Before going to them for help, I
+    highly suggest to repeat your setup via in a compiled manner to try and 
+    replicate the problem. If you can successfully replicate it, they may be
+    more inclined to help you. 
+
+ -> The main scripts that their source tar ball comes with is available. All of
+    the functions for the "developer" or "debugging" is all in it still, in tact.
+    None of the functions were moved to our wrapper. You can find it in:
+    /usr/share/inspircd/bin
+
+ -> Be careful when running /usr/bin/inspircd or the perl script. Always try to
+    use sudo -u inspircd before running the commands. Otherwise, permissions
+    will get set incorrectly for the next time you run the service normally.
+
+ -> If you are wanting certain functionality, for example, ldap authentication
+    or maybe a form of a specific regex, you will need to install the packages
+    required. They do not come in as dependencies as this package was compiled
+    with almost all of the support you can imagine. Install what you need.
+
+    -> ldap: yum install openldap
+    -> postgres: yum install postgresql
+    -> mysql: yum install mysql-libs (or mariadb-libs for EL7 and higher)
+    -> geoip: yum install geoip
+    -> pcres: yum install pcre2
+    -> c-ares: yum install c-ares
+    -> tre: yum install tre
