@@ -22,6 +22,8 @@ Source5:	%{name}.README
 
 BuildRequires:	perl(LWP::Simple)
 BuildRequires:	perl(LWP::Protocol::https)
+BuildRequires:	perl(Crypt::SSLeay)
+BuildRequires:	perl(IO::Socket::SSL)
 BuildRequires:	perl(Getopt::Long)
 BuildRequires:	gcc-c++
 BuildRequires:	openssl-devel
@@ -376,6 +378,7 @@ fi
 - Extra plugins package created
 - devel package created
 - Fixed enable-extras
+- Added extra build requirements that were not needed before
 
 * Fri Apr 8 2016 Louis Abel <louis@shootthej.net> - 2.0.21-1
 - Initial build for InspIRCd 2.0.21
