@@ -64,7 +64,7 @@ So what did you change?
 These are the things that differ from a regular compiled version of InspIRCd:
 
 * Software compiled and installed according to the Fedora Packaging Guidelines
-* Separate plugins package made with all 145 available modules from the modulemanager
+* Separate plugins package made with all 54 available modules from the modulemanager
 * Compiled with almost all extras (gnutls, mssql, and stdlib are excluded) [#f1]_
 * Compiled using epoll
 * logrotate configuration provided
@@ -83,7 +83,7 @@ These are the things that differ from a regular compiled version of InspIRCd:
 What if I want custom options?
 ++++++++++++++++++++++++++++++
 
-Go ahead and take my spec file and modify it to your needs. I cannot imagine you'd want to make many changes as almost all extras were compiled in.
+Go ahead and take my spec file and modify it to your needs. I cannot imagine you'd want to make many changes as almost all extras were compiled in for an extras package.
 
 Do you support the software?
 ++++++++++++++++++++++++++++
@@ -111,7 +111,7 @@ Ensure you are using mock and that your .rpmmacros are setup correctly. The comm
 Do you support other architectures/Can it build in $ARCH architecture?
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-I only have x86 systems, so I'm unable to try it out on ARM, PPC64, etc. However, if you want to take my srpm and try, go for it. I would love to see the results. If it works, I will add the architecture to the copr repo.
+I only have x86 systems, so I'm unable to try it out on ARM, PPC64, etc. However, if you want to take my srpm and try, go for it. I would love to see the results. If it works, I will add the architecture to the copr repo (if available).
 
 I'd like to contribute to this or make a change...
 ++++++++++++++++++++++++++++++++++++++++++++++++++

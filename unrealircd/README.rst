@@ -135,7 +135,7 @@ Ensure you are using mock and that your .rpmmacros are setup correctly. The comm
 Do you support other architectures/Can it build in $ARCH architecture?
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-I only have x86 systems, so I'm unable to try it out on ARM, PPC64, etc. However, if you want to take my srpm and try, go for it. I would love to see the results. If it works, I will add the architecture to the copr repo.
+I only have x86 systems, so I'm unable to try it out on ARM, PPC64, etc. However, if you want to take my srpm and try, go for it. I would love to see the results. If it works, I will add the architecture to the copr repo (if available).
 
 How do you handle plugins?
 ++++++++++++++++++++++++++

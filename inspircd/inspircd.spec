@@ -3,11 +3,11 @@
 %global major_version 2
 %global minor_version 0
 %global micro_version 21
-%global build_with_plugins 0
+%global build_with_plugins 1
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -30,10 +30,14 @@ BuildRequires:	postgresql-devel
 BuildRequires:	sqlite-devel
 BuildRequires:	geoip-devel
 BuildRequires:	openldap-devel
+%if "%{build_with_plugins}" == "1"
+BuildRequires:	re2-devel
+%endif
 
 ## As far as I'm aware, the other packages can be installed
 ## when the modules are enabled. This is mentioned in the
-## README.
+## README. Essentially, there's no direct requirement for
+## the packages we compiled against.
 Requires:	openssl
 Requires:	perl(Getopt::Long)
 
@@ -64,27 +68,51 @@ documented module system. By keeping core functionality to a minimum we hope to
 increase the stability, security and speed of InspIRCd while also making it
 customisable to the needs of many different users.
 
-And after all it’s free and open source.
+And after all it's free and open source.
+
+%package	devel
+Summary:	InspIRCd development headers
+Requires:	inspircd = %{version}-%{release}
+
+%description	devel
+This package contains the development headers required for developing against
+inspircd.
+
+%if "%{build_with_plugins}" == "1"
+
+%package	extras
+Summary:	InspIRCd modules provided by the module manager
+Requires:	inspircd = %{version}-%{release}
+
+%description	extras
+This package has, at the time of build, 54 extra modules that can be pulled via
+the modulemanager binary in the source tar ball. These are compiled specifically
+against the %{version} stable branch. Anything gnutls related is not packaged.
+
+%endif
 
 %prep
 %setup -q
 
-## In the future, let's make sure we compile all available modules
-## We should consider if it should be an "extras" package or all
-## module packages. There's about 145 plugins. 
-
 ## Enable all extras EXCEPT gnutls, mssql, and stdlib
 %build
-%_configure --enable-extras=m_ssl_openssl.cpp,\
-	m_ldapauth.cpp,\
-	m_ldapoper.cpp,\
-	m_mysql.cpp,\
-	m_pgsql.cpp,\
-	m_regex_pcre.cpp,\
-	m_regex_posix.cpp,\
-	m_regex_tre.cpp,\
-	m_sqlite3.cpp,\
-	m_geoip.cpp
+%_configure --enable-extras=m_ssl_openssl.cpp \
+	--enable-extras=m_ldapauth.cpp \
+	--enable-extras=m_ldapoper.cpp \
+	--enable-extras=m_mysql.cpp \
+	--enable-extras=m_pgsql.cpp \
+	--enable-extras=m_regex_pcre.cpp \
+	--enable-extras=m_regex_posix.cpp \
+	--enable-extras=m_regex_tre.cpp \
+	--enable-extras=m_sqlite3.cpp \
+	--enable-extras=m_geoip.cpp
+
+# Add all plugins
+%if "%{build_with_plugins}" == "1"
+for i in $(./modulemanager list | awk '/^m_/ && !/gnutls/ {print $1}') 
+	do ./modulemanager install $i
+done
+%endif
 
 # We're no longer supported :(
 %configure --disable-interactive \
@@ -136,15 +164,21 @@ popd
 %{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_localstatedir}/run/%{name}
 %endif
 
-# Placeholder for plugins
-
 # development headers
-
+%{__mkdir} -p ${RPM_BUILD_ROOT}/%{_includedir}/%{name}/{commands,modes,threadengines}
+%{__install} -m 0644 include/*.h \
+	${RPM_BUILD_ROOT}%{_includedir}/%{name}
+%{__install} -m 0644 include/commands/*.h \
+	${RPM_BUILD_ROOT}%{_includedir}/%{name}/commands
+%{__install} -m 0644 include/modes/*.h \
+	${RPM_BUILD_ROOT}%{_includedir}/%{name}/modes
+%{__install} -m 0644 include/threadengines/*.h \
+	${RPM_BUILD_ROOT}%{_includedir}/%{name}/threadengines
 
 %pre
 # Since we are not an official Fedora build, we don't get an
 # assigned uid/gid. This may make it difficult when installed
-# on multiple systems.
+# on multiple systems that have different package sets.
 %{_sbindir}/groupadd -r %{name} 2>/dev/null || :
 %{_sbindir}/useradd -r -g %{name} \
 	-s /sbin/nologin -d %{_datadir}/inspircd \
@@ -215,11 +249,133 @@ fi
 %{_var}/run/%{name}
 %endif
 
-# Placeholder for plugins
+# Extra Modules - We need to exclude them all by hand
+%if "%{build_with_plugins}" == "1"
+%exclude %{_libdir}/%{name}/modules/m_accounthost.so
+%exclude %{_libdir}/%{name}/modules/m_antibear.so
+%exclude %{_libdir}/%{name}/modules/m_antibottler.so
+%exclude %{_libdir}/%{name}/modules/m_antirandom.so
+%exclude %{_libdir}/%{name}/modules/m_authy.so
+%exclude %{_libdir}/%{name}/modules/m_autodrop.so
+%exclude %{_libdir}/%{name}/modules/m_autokick.so
+%exclude %{_libdir}/%{name}/modules/m_capnotify.so
+%exclude %{_libdir}/%{name}/modules/m_changecap.so
+%exclude %{_libdir}/%{name}/modules/m_ciphersuitejoin.so
+%exclude %{_libdir}/%{name}/modules/m_conn_banner.so
+%exclude %{_libdir}/%{name}/modules/m_custompenalty.so
+%exclude %{_libdir}/%{name}/modules/m_dccblock.so
+%exclude %{_libdir}/%{name}/modules/m_deferaccept.so
+%exclude %{_libdir}/%{name}/modules/m_disablemodes.so
+%exclude %{_libdir}/%{name}/modules/m_extbanredirect.so
+%exclude %{_libdir}/%{name}/modules/m_findxline.so
+%exclude %{_libdir}/%{name}/modules/m_flashpolicyd.so
+%exclude %{_libdir}/%{name}/modules/m_forceident.so
+%exclude %{_libdir}/%{name}/modules/m_fullversion.so
+%exclude %{_libdir}/%{name}/modules/m_geoipban.so
+%exclude %{_libdir}/%{name}/modules/m_hideidle.so
+%exclude %{_libdir}/%{name}/modules/m_identmeta.so
+%exclude %{_libdir}/%{name}/modules/m_invisible.so
+%exclude %{_libdir}/%{name}/modules/m_invitenotify.so
+%exclude %{_libdir}/%{name}/modules/m_ircxusernames.so
+%exclude %{_libdir}/%{name}/modules/m_join0.so
+%exclude %{_libdir}/%{name}/modules/m_joinoninvite.so
+%exclude %{_libdir}/%{name}/modules/m_joinpartsno.so
+%exclude %{_libdir}/%{name}/modules/m_lusersnoservices.so
+%exclude %{_libdir}/%{name}/modules/m_namedstats.so
+%exclude %{_libdir}/%{name}/modules/m_nickdelay.so
+%exclude %{_libdir}/%{name}/modules/m_nickin001.so
+%exclude %{_libdir}/%{name}/modules/m_noctcp_user.so
+%exclude %{_libdir}/%{name}/modules/m_nooponcreate.so
+%exclude %{_libdir}/%{name}/modules/m_nouidnick.so
+%exclude %{_libdir}/%{name}/modules/m_override_umode.so
+%exclude %{_libdir}/%{name}/modules/m_pretenduser.so
+%exclude %{_libdir}/%{name}/modules/m_privdeaf.so
+%exclude %{_libdir}/%{name}/modules/m_quietban.so
+%exclude %{_libdir}/%{name}/modules/m_regex_re2.so
+%exclude %{_libdir}/%{name}/modules/m_rehashsslsignal.so
+%exclude %{_libdir}/%{name}/modules/m_replaymsg.so
+%exclude %{_libdir}/%{name}/modules/m_require_auth.so
+%exclude %{_libdir}/%{name}/modules/m_rotatelog.so
+%exclude %{_libdir}/%{name}/modules/m_rpg.so
+%exclude %{_libdir}/%{name}/modules/m_sha1.so
+%exclude %{_libdir}/%{name}/modules/m_slowmode.so
+%exclude %{_libdir}/%{name}/modules/m_solvemsg.so
+%exclude %{_libdir}/%{name}/modules/m_stats_unlinked.so
+%exclude %{_libdir}/%{name}/modules/m_svsoper.so
+%exclude %{_libdir}/%{name}/modules/m_totp.so
+%files extras
+%{_libdir}/%{name}/modules/m_accounthost.so
+%{_libdir}/%{name}/modules/m_antibear.so
+%{_libdir}/%{name}/modules/m_antibottler.so
+%{_libdir}/%{name}/modules/m_antirandom.so
+%{_libdir}/%{name}/modules/m_authy.so
+%{_libdir}/%{name}/modules/m_autodrop.so
+%{_libdir}/%{name}/modules/m_autokick.so
+%{_libdir}/%{name}/modules/m_capnotify.so
+%{_libdir}/%{name}/modules/m_changecap.so
+%{_libdir}/%{name}/modules/m_ciphersuitejoin.so
+%{_libdir}/%{name}/modules/m_conn_banner.so
+%{_libdir}/%{name}/modules/m_custompenalty.so
+%{_libdir}/%{name}/modules/m_dccblock.so
+%{_libdir}/%{name}/modules/m_deferaccept.so
+%{_libdir}/%{name}/modules/m_disablemodes.so
+%{_libdir}/%{name}/modules/m_extbanredirect.so
+%{_libdir}/%{name}/modules/m_findxline.so
+%{_libdir}/%{name}/modules/m_flashpolicyd.so
+%{_libdir}/%{name}/modules/m_forceident.so
+%{_libdir}/%{name}/modules/m_fullversion.so
+%{_libdir}/%{name}/modules/m_geoipban.so
+%{_libdir}/%{name}/modules/m_hideidle.so
+%{_libdir}/%{name}/modules/m_identmeta.so
+%{_libdir}/%{name}/modules/m_invisible.so
+%{_libdir}/%{name}/modules/m_invitenotify.so
+%{_libdir}/%{name}/modules/m_ircxusernames.so
+%{_libdir}/%{name}/modules/m_join0.so
+%{_libdir}/%{name}/modules/m_joinoninvite.so
+%{_libdir}/%{name}/modules/m_joinpartsno.so
+%{_libdir}/%{name}/modules/m_lusersnoservices.so
+%{_libdir}/%{name}/modules/m_namedstats.so
+%{_libdir}/%{name}/modules/m_nickdelay.so
+%{_libdir}/%{name}/modules/m_nickin001.so
+%{_libdir}/%{name}/modules/m_noctcp_user.so
+%{_libdir}/%{name}/modules/m_nooponcreate.so
+%{_libdir}/%{name}/modules/m_nouidnick.so
+%{_libdir}/%{name}/modules/m_override_umode.so
+%{_libdir}/%{name}/modules/m_pretenduser.so
+%{_libdir}/%{name}/modules/m_privdeaf.so
+%{_libdir}/%{name}/modules/m_quietban.so
+%{_libdir}/%{name}/modules/m_regex_re2.so
+%{_libdir}/%{name}/modules/m_rehashsslsignal.so
+%{_libdir}/%{name}/modules/m_replaymsg.so
+%{_libdir}/%{name}/modules/m_require_auth.so
+%{_libdir}/%{name}/modules/m_rotatelog.so
+%{_libdir}/%{name}/modules/m_rpg.so
+%{_libdir}/%{name}/modules/m_sha1.so
+%{_libdir}/%{name}/modules/m_slowmode.so
+%{_libdir}/%{name}/modules/m_solvemsg.so
+%{_libdir}/%{name}/modules/m_stats_unlinked.so
+%{_libdir}/%{name}/modules/m_svsoper.so
+%{_libdir}/%{name}/modules/m_totp.so
+%endif
 
 # development headers
+%files devel
+%defattr (0644,root,root,0755)
+%dir %{_includedir}/%{name}
+%dir %{_includedir}/%{name}/commands
+%dir %{_includedir}/%{name}/modes
+%dir %{_includedir}/%{name}/threadengines
+%{_includedir}/%{name}/*.h
+%{_includedir}/%{name}/commands/*.h
+%{_includedir}/%{name}/modes/*.h
+%{_includedir}/%{name}/threadengines/*.h
 
 %changelog
+* Sat Apr 9 2016 Louis Abel <louis@shootthej.net> - 2.0.21-2
+- Extra plugins package created
+- devel package created
+- Fixed enable-extras
+
 * Fri Apr 8 2016 Louis Abel <louis@shootthej.net> - 2.0.21-1
 - Initial build for InspIRCd 2.0.21
 
