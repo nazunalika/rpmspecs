@@ -30,6 +30,7 @@ BuildRequires:	postgresql-devel
 BuildRequires:	sqlite-devel
 BuildRequires:	geoip-devel
 BuildRequires:	openldap-devel
+BuildRequires:	pcre-devel
 %if "%{build_with_plugins}" == "1"
 BuildRequires:	re2-devel
 %endif
