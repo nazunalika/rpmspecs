@@ -1,0 +1,12 @@
+/var/log/atheme/atheme.log {
+        weekly
+	notifempty
+        missingok
+        create 0600 atheme atheme
+        rotate 7
+        compress
+        delaycompress
+        postrotate
+		/sbin/service atheme reload
+	endscript
+}
