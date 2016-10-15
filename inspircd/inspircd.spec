@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 2
 %global minor_version 0
-%global micro_version 21
+%global micro_version 22
 %global build_with_plugins 1
 
 Name:		inspircd
