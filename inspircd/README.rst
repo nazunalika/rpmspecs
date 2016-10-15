@@ -90,7 +90,7 @@ Do you support the software?
 
 In this instance, I do not provide support for this software. Please view the InspIRCd `documentation <https://wiki.inspircd.org/>`_. If you, however, feel that there is a problem with the packaging or other issues because of how it was built, please do not hesitate to open an issue and I will investigate with you. As long as we do not have to make code changes or patches to the actual code, then we should be fine. I'm trying to avoid making changes to their source code directly.
 
-I do not know if inspircd will support you directly since this is packaged. I have not looked far into their documentation, but it appears they may be ok with it, since they mention "if you are packaging" at one point. However, their "configure" scripts hint that non-interactive builds are not supported at all (and also probably because I made my own init scripts, systemd units/wrappers to handle the service). This tells me they won't bother supporting you as a result.
+I do not know if inspircd will support you directly since this is packaged. I have not looked far into their documentation, but it appears they may be ok with it, since they mention "if you are packaging" at one point. However, their "configure" scripts hint that non-interactive builds are not supported at all (and also probably because I made my own init scripts, systemd units/wrappers to handle the service, which I will be changing soon). This tells me they won't bother supporting you as a result.
 
 I suggest try compiling it by hand on another server (preferrably on a sandbox) to replicate any issue you have and see if the issue also occurs, using similar configure options I have used. If the issue can be reproduced, you can probably try to ask them for support. If you can't, open an issue here and I will work with you. **You may not be the only one that has issues, so it's important that we work together to ensure most, if not all potential problems are resolved.**
 
@@ -149,6 +149,14 @@ Build
   * Replace dist with fedora or centos
   * Replace X with version number 6 or 7
   * Replace arch with your appropriate architecture
+
+Todo List
+---------
+
+Yes, I have a todo list. 
+
+* Change systemd unit to be used purely without a wrapper
+* Change wrapper to be purely a utility script
 
 .. rubric:: Footnotes
 
