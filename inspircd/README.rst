@@ -103,6 +103,18 @@ A good way to troubleshoot is to run sudo -u inspircd /usr/bin/inspircd -nofork.
 
 I highly recommend reading the inspircd `documentation <https://wiki.inspircd.org/Introduction>`_.
 
+Wait... they already have an RPM... why are you making your own?
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+A few reasons. Let's start with a couple of obvious ones.
+
+* There are no spec files or source RPM files they have
+* There source code indicate no obvious spec files or build path for how they build their RPM (it is somewhat clear that they may use mock)
+* Their systemd unit from their RPM uses forking, when it clearly can be used as "simple" [#f3]_
+* They do not separate their plugins into a separate package(s) [#f4]_
+
+Because of these reasons, I am continuing to work with this RPM and provide it in copr for other users who use Fedora and CentOS. 
+
 I can't get this to build. Help?
 ++++++++++++++++++++++++++++++++
 
@@ -155,10 +167,12 @@ Todo List
 
 Yes, I have a todo list. 
 
-* Change systemd unit to be used purely without a wrapper
-* Change wrapper to be purely a utility script
+* Change systemd unit to be used purely without a wrapper (50% done testing)
+* Change wrapper to be purely a utility script (or get rid of it entirely)
 
 .. rubric:: Footnotes
 
 .. [#f1] stdlib could not be compiled on Enterprise Linux 6. I have also assumed because of an older GCC version on Enterprise Linux 7, it won't compile right either. And since I'm aiming to keep compatibility between multiple release versions, I won't make a patch to change c++11 to c++0x for Enterprise Linux. The module compiles, but with warnings that was concerning. I do not want that off chance of a crash or other weird issues to happen as a result of it being compiled into the build. Because of this, tre, pcre2, and posix are the regex engines implemented in this release. Also, for GnuTLS, why would you want to use that? Why would you even allow it to be an option? The fact they recommend it (because "performance") is a problem, in my opinion.
 .. [#f2] Majority of their scripts and things they do is all in perl. I'm all for perl, don't get me wrong. Having the configure script as perl was one thing, and I was able to understand what they were doing when I reviewed it. However, their "script" that gets generated after running `make' was meant to be in /etc/rc.d/init.d, and it wasn't exactly the prettiest thing I've seen. To ensure that it works properly with the init system of RHEL 6, I rewrote it from the ground up. *However* I ensured that I kept their perl script around in case I missed something from their script or if the "developer" functions were needed.
+.. [#f3] It's generally a good practice to try to make a service run without forking if at all possible. Using "forking" basically looks like the developer or admin didn't want to try to make the simple mode work. There are cases that forking must be used, this is not one of them.
+.. [#f4] This isn't necessarily a bad thing. I point this out from a modularity standpoint. I compare this to how the httpd package is in Fedora and CentOS, where plugins and modules are separated into mod_* packages and the like. The modules are still compiled against the main version of the package. Then again, the modules that are part of inspircd tend to be very useful and more than likely used in any new IRC server created. Perhaps in the future, I will make the plugins part of the actual release. 
