@@ -374,6 +374,9 @@ fi
 %{_includedir}/%{name}/threadengines/*.h
 
 %changelog
+* Tue Nov 1 2016 Louis Abel <louis@shootthej.net> - 2.0.22-2
+- Version rebase to 2.0.22
+
 * Sat Apr 9 2016 Louis Abel <louis@shootthej.net> - 2.0.21-2
 - Extra plugins package created
 - devel package created
