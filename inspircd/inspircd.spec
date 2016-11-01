@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 2
 %global minor_version 0
-%global micro_version 22
+%global micro_version 23
 %global build_with_plugins 1
 
 Name:		inspircd
@@ -374,8 +374,8 @@ fi
 %{_includedir}/%{name}/threadengines/*.h
 
 %changelog
-* Tue Nov 1 2016 Louis Abel <louis@shootthej.net> - 2.0.22-2
-- Version rebase to 2.0.22
+* Tue Nov 1 2016 Louis Abel <louis@shootthej.net> - 2.0.23-2
+- Version rebase to 2.0.23
 
 * Sat Apr 9 2016 Louis Abel <louis@shootthej.net> - 2.0.21-2
 - Extra plugins package created
