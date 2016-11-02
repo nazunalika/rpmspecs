@@ -3,7 +3,7 @@
 %global major_version 2
 %global minor_version 0
 %global micro_version 23
-%global build_with_plugins 1
+%global build_with_all_plugins 1
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
@@ -33,9 +33,6 @@ BuildRequires:	sqlite-devel
 BuildRequires:	geoip-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
-%if "%{build_with_plugins}" == "1"
-BuildRequires:	re2-devel
-%endif
 
 ## As far as I'm aware, the other packages can be installed
 ## when the modules are enabled. This is mentioned in the
@@ -81,19 +78,6 @@ Requires:	inspircd = %{version}-%{release}
 This package contains the development headers required for developing against
 inspircd.
 
-%if "%{build_with_plugins}" == "1"
-
-%package	extras
-Summary:	InspIRCd modules provided by the module manager
-Requires:	inspircd = %{version}-%{release}
-
-%description	extras
-This package has, at the time of build, 54 extra modules that can be pulled via
-the modulemanager binary in the source tar ball. These are compiled specifically
-against the %{version} stable branch. Anything gnutls related is not packaged.
-
-%endif
-
 %prep
 %setup -q
 
@@ -111,8 +95,8 @@ against the %{version} stable branch. Anything gnutls related is not packaged.
 	--enable-extras=m_geoip.cpp
 
 # Add all plugins
-%if "%{build_with_plugins}" == "1"
-for i in $(./modulemanager list | awk '/^m_/ && !/gnutls/ {print $1}') 
+%if "%{build_with_all_plugins}" == "1"
+for i in $(./modulemanager list | awk '/^m_/ && !/gnutls/ && !/re2/ {print $1}') 
 	do ./modulemanager install $i
 done
 %endif
@@ -252,115 +236,6 @@ fi
 %{_var}/run/%{name}
 %endif
 
-# Extra Modules - We need to exclude them all by hand
-%if "%{build_with_plugins}" == "1"
-%exclude %{_libdir}/%{name}/modules/m_accounthost.so
-%exclude %{_libdir}/%{name}/modules/m_antibear.so
-%exclude %{_libdir}/%{name}/modules/m_antibottler.so
-%exclude %{_libdir}/%{name}/modules/m_antirandom.so
-%exclude %{_libdir}/%{name}/modules/m_authy.so
-%exclude %{_libdir}/%{name}/modules/m_autodrop.so
-%exclude %{_libdir}/%{name}/modules/m_autokick.so
-%exclude %{_libdir}/%{name}/modules/m_capnotify.so
-%exclude %{_libdir}/%{name}/modules/m_changecap.so
-%exclude %{_libdir}/%{name}/modules/m_ciphersuitejoin.so
-%exclude %{_libdir}/%{name}/modules/m_conn_banner.so
-%exclude %{_libdir}/%{name}/modules/m_custompenalty.so
-%exclude %{_libdir}/%{name}/modules/m_dccblock.so
-%exclude %{_libdir}/%{name}/modules/m_deferaccept.so
-%exclude %{_libdir}/%{name}/modules/m_disablemodes.so
-%exclude %{_libdir}/%{name}/modules/m_extbanredirect.so
-%exclude %{_libdir}/%{name}/modules/m_findxline.so
-%exclude %{_libdir}/%{name}/modules/m_flashpolicyd.so
-%exclude %{_libdir}/%{name}/modules/m_forceident.so
-%exclude %{_libdir}/%{name}/modules/m_fullversion.so
-%exclude %{_libdir}/%{name}/modules/m_geoipban.so
-%exclude %{_libdir}/%{name}/modules/m_hideidle.so
-%exclude %{_libdir}/%{name}/modules/m_identmeta.so
-%exclude %{_libdir}/%{name}/modules/m_invisible.so
-%exclude %{_libdir}/%{name}/modules/m_invitenotify.so
-%exclude %{_libdir}/%{name}/modules/m_ircxusernames.so
-%exclude %{_libdir}/%{name}/modules/m_join0.so
-%exclude %{_libdir}/%{name}/modules/m_joinoninvite.so
-%exclude %{_libdir}/%{name}/modules/m_joinpartsno.so
-%exclude %{_libdir}/%{name}/modules/m_lusersnoservices.so
-%exclude %{_libdir}/%{name}/modules/m_namedstats.so
-%exclude %{_libdir}/%{name}/modules/m_nickdelay.so
-%exclude %{_libdir}/%{name}/modules/m_nickin001.so
-%exclude %{_libdir}/%{name}/modules/m_noctcp_user.so
-%exclude %{_libdir}/%{name}/modules/m_nooponcreate.so
-%exclude %{_libdir}/%{name}/modules/m_nouidnick.so
-%exclude %{_libdir}/%{name}/modules/m_override_umode.so
-%exclude %{_libdir}/%{name}/modules/m_pretenduser.so
-%exclude %{_libdir}/%{name}/modules/m_privdeaf.so
-%exclude %{_libdir}/%{name}/modules/m_quietban.so
-%exclude %{_libdir}/%{name}/modules/m_regex_re2.so
-%exclude %{_libdir}/%{name}/modules/m_rehashsslsignal.so
-%exclude %{_libdir}/%{name}/modules/m_replaymsg.so
-%exclude %{_libdir}/%{name}/modules/m_require_auth.so
-%exclude %{_libdir}/%{name}/modules/m_rotatelog.so
-%exclude %{_libdir}/%{name}/modules/m_rpg.so
-%exclude %{_libdir}/%{name}/modules/m_sha1.so
-%exclude %{_libdir}/%{name}/modules/m_slowmode.so
-%exclude %{_libdir}/%{name}/modules/m_solvemsg.so
-%exclude %{_libdir}/%{name}/modules/m_stats_unlinked.so
-%exclude %{_libdir}/%{name}/modules/m_svsoper.so
-%exclude %{_libdir}/%{name}/modules/m_totp.so
-%files extras
-%{_libdir}/%{name}/modules/m_accounthost.so
-%{_libdir}/%{name}/modules/m_antibear.so
-%{_libdir}/%{name}/modules/m_antibottler.so
-%{_libdir}/%{name}/modules/m_antirandom.so
-%{_libdir}/%{name}/modules/m_authy.so
-%{_libdir}/%{name}/modules/m_autodrop.so
-%{_libdir}/%{name}/modules/m_autokick.so
-%{_libdir}/%{name}/modules/m_capnotify.so
-%{_libdir}/%{name}/modules/m_changecap.so
-%{_libdir}/%{name}/modules/m_ciphersuitejoin.so
-%{_libdir}/%{name}/modules/m_conn_banner.so
-%{_libdir}/%{name}/modules/m_custompenalty.so
-%{_libdir}/%{name}/modules/m_dccblock.so
-%{_libdir}/%{name}/modules/m_deferaccept.so
-%{_libdir}/%{name}/modules/m_disablemodes.so
-%{_libdir}/%{name}/modules/m_extbanredirect.so
-%{_libdir}/%{name}/modules/m_findxline.so
-%{_libdir}/%{name}/modules/m_flashpolicyd.so
-%{_libdir}/%{name}/modules/m_forceident.so
-%{_libdir}/%{name}/modules/m_fullversion.so
-%{_libdir}/%{name}/modules/m_geoipban.so
-%{_libdir}/%{name}/modules/m_hideidle.so
-%{_libdir}/%{name}/modules/m_identmeta.so
-%{_libdir}/%{name}/modules/m_invisible.so
-%{_libdir}/%{name}/modules/m_invitenotify.so
-%{_libdir}/%{name}/modules/m_ircxusernames.so
-%{_libdir}/%{name}/modules/m_join0.so
-%{_libdir}/%{name}/modules/m_joinoninvite.so
-%{_libdir}/%{name}/modules/m_joinpartsno.so
-%{_libdir}/%{name}/modules/m_lusersnoservices.so
-%{_libdir}/%{name}/modules/m_namedstats.so
-%{_libdir}/%{name}/modules/m_nickdelay.so
-%{_libdir}/%{name}/modules/m_nickin001.so
-%{_libdir}/%{name}/modules/m_noctcp_user.so
-%{_libdir}/%{name}/modules/m_nooponcreate.so
-%{_libdir}/%{name}/modules/m_nouidnick.so
-%{_libdir}/%{name}/modules/m_override_umode.so
-%{_libdir}/%{name}/modules/m_pretenduser.so
-%{_libdir}/%{name}/modules/m_privdeaf.so
-%{_libdir}/%{name}/modules/m_quietban.so
-%{_libdir}/%{name}/modules/m_regex_re2.so
-%{_libdir}/%{name}/modules/m_rehashsslsignal.so
-%{_libdir}/%{name}/modules/m_replaymsg.so
-%{_libdir}/%{name}/modules/m_require_auth.so
-%{_libdir}/%{name}/modules/m_rotatelog.so
-%{_libdir}/%{name}/modules/m_rpg.so
-%{_libdir}/%{name}/modules/m_sha1.so
-%{_libdir}/%{name}/modules/m_slowmode.so
-%{_libdir}/%{name}/modules/m_solvemsg.so
-%{_libdir}/%{name}/modules/m_stats_unlinked.so
-%{_libdir}/%{name}/modules/m_svsoper.so
-%{_libdir}/%{name}/modules/m_totp.so
-%endif
-
 # development headers
 %files devel
 %defattr (0644,root,root,0755)
@@ -376,6 +251,8 @@ fi
 %changelog
 * Tue Nov 1 2016 Louis Abel <louis@shootthej.net> - 2.0.23-2
 - Version rebase to 2.0.23
+- Combined all compiled modules into a single package
+- Removed support for re2 which requires stdlib/c++11
 
 * Sat Apr 9 2016 Louis Abel <louis@shootthej.net> - 2.0.21-2
 - Extra plugins package created

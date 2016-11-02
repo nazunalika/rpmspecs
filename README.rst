@@ -45,6 +45,17 @@ When do you stop supporting a particular release?
 
 For Enterprise Linux, usually a year before the expected EOL date. For Fedora, a month before the expected EOL date. The exception is when a newer major release is pushed later from its expected release.
 
+What if $package cannot be compiled on a release you support?
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This is a good question and is unfortunately somewhat hard to answer. But I'll try my best here.
+
+If an RPM compiles on all releases I support and then doesn't during a version rebase, I typically try to figure out what changed or what I can do to ensure it builds properly, even if this requires logic to separate out the "problem" releases and what they need instead. 
+
+In the case of making patches, I usually dislike making patches, in the case of modifying source code. If a patch has to be made to the source code, I will not provide it in the RPM unless it is a reasonable patch and does not break other releases and can be submitted upstream. 
+
+If it's a patch for the actual build process, then I will provide a patch because it does not modify the source code of the application directly. In the case that no changes can ensure the package will build, I will stop providing support for that release from then on.
+
 Do you have any repositories?
 +++++++++++++++++++++++++++++
 
