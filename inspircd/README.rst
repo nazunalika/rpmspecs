@@ -168,6 +168,9 @@ Yes, I have a todo list.
 
 * Change systemd unit to be used purely without a wrapper (50% done testing)
 * Change wrapper to be purely a utility script (or get rid of it entirely)
+* Provide a working (albeit, insecure) configuration so service can run immediately on installation
+
+  * This includes utilizing /etc/pki/tls/certs/make-dummy-cert to make a dummy certificate
 
 .. rubric:: Footnotes
 
