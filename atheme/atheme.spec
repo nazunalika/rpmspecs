@@ -192,7 +192,7 @@ fi
 %{_libdir}/pkgconfig/libmowgli-2.pc
 
 %changelog
-* Wed Feb 01 2017 Louis Abel <tucklesepk@gmail.com>
+* Wed Feb 01 2017 Louis Abel <tucklesepk@gmail.com> - 7.2.7-2
 - Building with tito and rebuilding without rawhide
 
 * Wed Feb 01 2017 Louis Abel <louis@shootthej.net> - 7.2.7-1
