@@ -10,38 +10,38 @@
 # atheme-services or B) require me to list every directory
 # on the configure line and make them point to -services.
 # If this were to become an official package, I would consider it.
-Name:		atheme
-Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	2%{?dist}
-Summary:	Services for IRC Networks
+Name:   atheme
+Version:  %{major_version}.%{minor_version}.%{micro_version}
+Release:  1%{?dist}
+Summary:  Services for IRC Networks
 
-Group:		System Environment/Daemons
-License:	MIT
-URL:		https://atheme.github.io
-Source0:	https://atheme.github.io/downloads/%{name}-services-%{major_version}.%{minor_version}.%{micro_version}.tar.bz2
-Source1:	%{name}.service
-Source2:	%{name}.logrotate
-Source3:	%{name}.init
+Group:    System Environment/Daemons
+License:  MIT
+URL:    https://atheme.github.io
+Source0:  https://atheme.github.io/downloads/%{name}-services-%{major_version}.%{minor_version}.%{micro_version}.tar.bz2
+Source1:  %{name}.service
+Source2:  %{name}.logrotate
+Source3:  %{name}.init
 
-BuildRequires:	cracklib-devel
-BuildRequires:	perl-ExtUtils-Embed
-BuildRequires:	openssl-devel
-BuildRequires:	openldap-devel
-BuildRequires:	pcre-devel
+BuildRequires:  cracklib-devel
+BuildRequires:  perl-ExtUtils-Embed
+BuildRequires:  openssl-devel
+BuildRequires:  openldap-devel
+BuildRequires:  pcre-devel
 
-Requires:	openssl
-Requires:	pcre
-Requires:	cracklib
+Requires: openssl
+Requires: pcre
+Requires: cracklib
 
 # OS Specific Requirements
 %if 0%{?fedora} || 0%{?rhel} >= 7
-BuildRequires:	systemd
-Requires(post):	systemd
+BuildRequires:  systemd
+Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-Requires:	systemd
+Requires: systemd
 %else
-Requires:	initscripts
+Requires: initscripts
 %endif
 
 
@@ -49,11 +49,11 @@ Requires:	initscripts
 Atheme is a feature-packed, extremely customisable IRC services
 daemon that is secure, stable and scalable.
 
-%package	devel
-Summary:	Atheme development headers
-Requires:	atheme = %{version}-%{release}
+%package  devel
+Summary:  Atheme development headers
+Requires: atheme = %{version}-%{release}
 
-%description	devel
+%description  devel
 This package contains the development headers required for developing
 against atheme.
 
@@ -66,18 +66,18 @@ against atheme.
 # installed. Until this is resolved, it is staying disabled.
 %build
 %configure \
-	--sysconfdir=%{_sysconfdir}/%{name} \
-	--enable-fhs-paths \
-	--enable-warnings \
-	--enable-contrib \
-	--enable-large-net \
-	--disable-rpath \
-	--with-cracklib \
-	--with-pcre \
-	--with-perl \
-	--with-ldap \
-	--without-libmowgli \
-	--disable-nls
+  --sysconfdir=%{_sysconfdir}/%{name} \
+  --enable-fhs-paths \
+  --enable-warnings \
+  --enable-contrib \
+  --enable-large-net \
+  --disable-rpath \
+  --with-cracklib \
+  --with-pcre \
+  --with-perl \
+  --with-ldap \
+  --without-libmowgli \
+  --disable-nls
 
 make %{?_smp_mflags}
 
@@ -87,13 +87,13 @@ make install DESTDIR=%{buildroot}
 
 %{__mkdir} -p ${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d
 %{__install} -m 0644 %{SOURCE2} \
-	${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d/%{name}
+  ${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d/%{name}
 
 # OS Specific
 %if 0%{?fedora} || 0%{?rhel} >= 7
 %{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_unitdir}
 %{__install} -m 0644 %{SOURCE1} \
-	${RPM_BUILD_ROOT}%{_unitdir}/atheme.service
+  ${RPM_BUILD_ROOT}%{_unitdir}/atheme.service
 %else
 %{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_initddir}
 %{__install} -m 0755 %{SOURCE3} ${RPM_BUILD_ROOT}%{_initddir}/%{name}
@@ -103,11 +103,11 @@ make install DESTDIR=%{buildroot}
 # development headers
 %{__mkdir} -p ${RPM_BUILD_ROOT}/%{_includedir}/%{name}/{inline,protocol}
 %{__install} -m 0644 include/*.h \
-	${RPM_BUILD_ROOT}%{_includedir}/%{name}
+  ${RPM_BUILD_ROOT}%{_includedir}/%{name}
 %{__install} -m 0644 include/inline/*.h \
-	${RPM_BUILD_ROOT}%{_includedir}/%{name}/inline
+  ${RPM_BUILD_ROOT}%{_includedir}/%{name}/inline
 %{__install} -m 0644 include/protocol/*.h \
-	${RPM_BUILD_ROOT}%{_includedir}/%{name}/protocol
+  ${RPM_BUILD_ROOT}%{_includedir}/%{name}/protocol
 
 %pre
 # Since we are not an official Fedora build, we don't get an
@@ -115,16 +115,16 @@ make install DESTDIR=%{buildroot}
 # on multiple systems that have different package sets.
 %{_sbindir}/groupadd -r %{name} 2>/dev/null || :
 %{_sbindir}/useradd -r -g %{name} \
-	-s /sbin/nologin -d %{_datadir}/%{name} \
-	-c 'Atheme IRC Services' %{name} 2>/dev/null || :
+  -s /sbin/nologin -d %{_datadir}/%{name} \
+  -c 'Atheme IRC Services' %{name} 2>/dev/null || :
 
 %preun
 %if 0%{?fedora} || 0%{?rhel} >= 7
 %systemd_preun %{name}.service
 %else
 if [ $1 = 0 ]; then
-	[ -f /var/lock/subsys/%{name} ] && /sbin/service %{name} stop
-	[ -f %{_initddir}/%{name} ] && chkconfig --del %{name}
+  [ -f /var/lock/subsys/%{name} ] && /sbin/service %{name} stop
+  [ -f %{_initddir}/%{name} ] && chkconfig --del %{name}
 fi
 %endif
 
@@ -140,7 +140,7 @@ fi
 %systemd_postun_with_restart %{name}.service
 %else
 if [ "$1" -ge "1" ]; then
-	[ -f /var/lock/subsys/%{name} ] && /sbin/service %{name} restart >/dev/null 2>&1
+  [ -f /var/lock/subsys/%{name} ] && /sbin/service %{name} restart >/dev/null 2>&1
 fi
 %endif
 
@@ -192,7 +192,7 @@ fi
 %{_libdir}/pkgconfig/libmowgli-2.pc
 
 %changelog
-* Wed Feb 01 2017 nazunalika 7.2.7-2
+* Wed Feb 01 2017 nazunalika <tucklesepk@gmail.com> 7.2.7-1
 - new package built with tito
 
 * Wed Feb 01 2017 Louis Abel <louis@shootthej.net> - 7.2.7-1
