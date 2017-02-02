@@ -12,7 +12,7 @@
 # If this were to become an official package, I would consider it.
 Name:   atheme
 Version:  %{major_version}.%{minor_version}.%{micro_version}
-Release:  2%{?dist}
+Release:  1%{?dist}
 Summary:  Services for IRC Networks
 
 Group:    System Environment/Daemons
@@ -192,9 +192,6 @@ fi
 %{_libdir}/pkgconfig/libmowgli-2.pc
 
 %changelog
-* Wed Feb 01 2017 Louis Abel <tucklesepk@gmail.com> - 7.2.7-2
-- Building with tito and rebuilding without rawhide
-
 * Wed Feb 01 2017 Louis Abel <louis@shootthej.net> - 7.2.7-1
 - Rebase for version 7.2.7
 
