@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 7
 %global minor_version 2
-%global micro_version 6
+%global micro_version 7
 %global build_with_plugins 0
 
 # Using atheme-services as a name would be fine, but that would
@@ -11,14 +11,14 @@
 # on the configure line and make them point to -services.
 # If this were to become an official package, I would consider it.
 Name:		atheme
-Version:	7.2.6
+Version:	%{major_version}.%{minor_version}.%{micro_version}
 Release:	1%{?dist}
 Summary:	Services for IRC Networks
 
 Group:		System Environment/Daemons
 License:	MIT
 URL:		https://atheme.github.io
-Source0:	https://atheme.github.io/downloads/%{name}-services-7.2.6.tar.bz2
+Source0:	https://atheme.github.io/downloads/%{name}-services-%{major_version}.%{minor_version}.%{micro_version}.tar.bz2
 Source1:	%{name}.service
 Source2:	%{name}.logrotate
 Source3:	%{name}.init
@@ -58,7 +58,7 @@ This package contains the development headers required for developing
 against atheme.
 
 %prep
-%setup -q -n %{name}-services-%{version}
+%setup -q -n %{name}-%{version}
 
 # I am explicitly calling ldap, perl, pcre, cracklib support
 # I am disabling internationalization as EL6 refuses to build
@@ -192,6 +192,9 @@ fi
 %{_libdir}/pkgconfig/libmowgli-2.pc
 
 %changelog
+* Wed Feb 01 2017 Louis Abel <louis@shootthej.net> - 7.2.7-1
+- Rebase for version 7.2.7
+
 * Sat Apr 16 2016 Louis Abel <louis@shootthej.net> - 7.2.6-1
 - Initial build for Atheme 7.2.6
 
