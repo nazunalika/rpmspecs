@@ -7,7 +7,7 @@
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -249,6 +249,9 @@ fi
 %{_includedir}/%{name}/threadengines/*.h
 
 %changelog
+* Tue Feb 7 2017 Louis Abel <louis@shootthej.net> - 2.0.23-3
+- Fixed init script description for EL6
+
 * Tue Nov 1 2016 Louis Abel <louis@shootthej.net> - 2.0.23-2
 - Version rebase to 2.0.23
 - Combined all compiled modules into a single package
