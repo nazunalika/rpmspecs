@@ -7,7 +7,7 @@
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -16,9 +16,8 @@ URL:		http://www.inspircd.org/
 Source0:	https://github.com/inspircd/inspircd/archive/v%{version}.tar.gz
 Source1:	%{name}.service
 Source2:	%{name}.init
-Source3:	%{name}.util.script
-Source4:	%{name}.logrotate
-Source5:	%{name}.README
+Source3:	%{name}.logrotate
+Source4:	%{name}.README
 
 BuildRequires:	perl(LWP::Simple)
 BuildRequires:	perl(LWP::Protocol::https)
@@ -116,18 +115,16 @@ done
 make %{?_smp_mflags}
 
 # Extra documentation
-cp %{SOURCE5} %{_builddir}/%{name}-%{version}/README.info
+cp %{SOURCE4} %{_builddir}/%{name}-%{version}/README.info
 
 %install
 rm -rf $RPM_BUILD_ROOT
 %make_install
 
 %{__mkdir} -p ${RPM_BUILD_ROOT}/%{_libexecdir}/%{name}
-%{__install} -m 0755 %{SOURCE3} \
-	${RPM_BUILD_ROOT}/%{_libexecdir}/%{name}/ircdutil
 
 %{__mkdir} -p ${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d
-%{__install} -m 0644 %{SOURCE4} \
+%{__install} -m 0644 %{SOURCE3} \
 	${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d/%{name}
 
 # Symlinks in our home directory
@@ -219,7 +216,6 @@ fi
 
 # Do I need perms on the symlinks?
 %dir %{_libexecdir}/%{name}
-%{_libexecdir}/%{name}/ircdutil
 %dir %{_datadir}/%{name}/bin
 %{_datadir}/%{name}/bin/%{name}
 %{_datadir}/%{name}/conf
@@ -249,6 +245,10 @@ fi
 %{_includedir}/%{name}/threadengines/*.h
 
 %changelog
+* Fri Feb 17 2017 Louis Abel <louis@shootthej.net> - 2.0.23-4
+- Removed util script
+- Changed systemd unit to work with ircd binaries
+
 * Tue Feb 7 2017 Louis Abel <louis@shootthej.net> - 2.0.23-3
 - Fixed init script description for EL6
 

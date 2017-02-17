@@ -5,9 +5,8 @@ After=network.target remote-fs.target nss-lookup.target
 [Service]
 Type=simple
 User=inspircd
-ExecStart=/usr/libexec/inspircd/ircdutil start
-ExecStop=/usr/libexec/inspircd/ircdutil stop
-ExecReload=/usr/libexec/inspircd/ircdutil reload
+ExecStart=/usr/bin/inspircd --nofork
+ExecReload=/bin/kill -HUP $MAINPID
 PrivateTmp=true
 
 [Install]

@@ -5,6 +5,8 @@
 # If this variable has no value, some functions will not work
 # The checkpid function exists for this reason.
 
+# !! This script is now deprecated !!
+
 IRCPID=`pgrep inspircd`
 
 if [ $UID -eq 0 ] || [[ $USER != "inspircd" ]]; then

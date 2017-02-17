@@ -15,8 +15,7 @@ of InspIRCd.
 
  -> The main scripts that their source tar ball comes with is available. All of
     the functions for the "developer" or "debugging" is all in it still, in tact.
-    None of the functions were moved to our wrapper. You can find it in:
-    /usr/share/inspircd/bin
+    You can find it in: /usr/share/inspircd/bin
 
  -> Be careful when running /usr/bin/inspircd or the perl script. Always try to
     use sudo -u inspircd before running the commands. Otherwise, permissions
@@ -34,3 +33,4 @@ of InspIRCd.
     -> pcres: yum install pcre2
     -> c-ares: yum install c-ares
     -> tre: yum install tre
+
