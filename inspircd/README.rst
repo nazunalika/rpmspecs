@@ -169,6 +169,7 @@ Yes, I have a todo list.
 * Provide a working (albeit, insecure) configuration so service can run immediately on installation
 
   * This includes utilizing /etc/pki/tls/certs/make-dummy-cert to make a dummy certificate
+  * This includes creating a configuration, motd, rules file that just works with warnings and information
 
 .. rubric:: Footnotes
 

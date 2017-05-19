@@ -2,12 +2,12 @@
 %global _hardened_build 1
 %global major_version 2
 %global minor_version 0
-%global micro_version 23
+%global micro_version 24
 %global build_with_all_plugins 1
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	4%{?dist}
+Release:	1%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -245,6 +245,9 @@ fi
 %{_includedir}/%{name}/threadengines/*.h
 
 %changelog
+* Fri May 19 2017 Louis Abel <louis@shootthej.net> - 2.0.24-1
+- Rebase to 2.0.24
+
 * Fri Feb 17 2017 Louis Abel <louis@shootthej.net> - 2.0.23-4
 - Removed util script
 - Changed systemd unit to work with ircd binaries
