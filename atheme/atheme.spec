@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 7
 %global minor_version 2
-%global micro_version 7
+%global micro_version 9
 %global build_with_plugins 0
 
 # Using atheme-services as a name would be fine, but that would
@@ -193,6 +193,10 @@ fi
 %{_libdir}/pkgconfig/libmowgli-2.pc
 
 %changelog
+* Wed Jul 12 2017 Louis Abel <louis@shootthej.net> - 7.2.9-2
+- Fedora 26 Rebuild
+- Version upgrade to 7.2.9
+
 * Fri Feb 3 2017 Louis Abel <louis@shootthej.net> - 7.2.7-2
 - Added atheme.conf as a ghost config file
 - Fixed source0 url and name
