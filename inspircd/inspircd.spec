@@ -2,12 +2,12 @@
 %global _hardened_build 1
 %global major_version 2
 %global minor_version 0
-%global micro_version 24
+%global micro_version 25
 %global build_with_all_plugins 1
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	2%{?dist}
+Release:	1%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -245,6 +245,10 @@ fi
 %{_includedir}/%{name}/threadengines/*.h
 
 %changelog
+* Wed Jul 12 2017 Louis Abel <louis@shootthej.net> - 2.0.25-1
+- Rebase to 2.0.25
+- Build for Fedora 27
+
 * Wed Jul 12 2017 Louis Abel <louis@shootthej.net> - 2.0.24-2
 - Rebuild for Fedora 26
 
