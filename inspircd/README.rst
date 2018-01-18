@@ -157,7 +157,7 @@ Build
 * rpmbuild -bs ~/rpmbuild/SPECS/inspircd.spec
 * mock -r dist-X-arch ~/rpmbuild/SRPMS/inspircd-*.src.rpm 
 
-  * Replace dist with fedora or centos
+  * Replace dist with fedora or epel
   * Replace X with version number 6 or 7
   * Replace arch with your appropriate architecture
 
@@ -169,7 +169,11 @@ Yes, I have a todo list.
 * Provide a working (albeit, insecure) configuration so service can run immediately on installation
 
   * This includes utilizing /etc/pki/tls/certs/make-dummy-cert to make a dummy certificate
-  * This includes creating a configuration, motd, rules file that just works with warnings and information
+  * This includes copying a configuration, motd, rules file that just works with warnings and information
+  * This **does not** include removing the "die" lines.
+
+* Branch out some modules into seperate packages
+* Enable gnutls support (request by a user who uses my RPM)
 
 .. rubric:: Footnotes
 

@@ -193,6 +193,9 @@ fi
 %{_libdir}/pkgconfig/libmowgli-2.pc
 
 %changelog
+* Wed Jan 17 2018 Louis Abel <louis@shootthej.net> - 7.2.9-2
+- Fedora 27 Rebuild
+
 * Wed Jul 12 2017 Louis Abel <louis@shootthej.net> - 7.2.9-2
 - Fedora 26 Rebuild
 - Version upgrade to 7.2.9

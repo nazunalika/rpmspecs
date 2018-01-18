@@ -19,6 +19,9 @@ Source2:	%{name}.init
 Source3:	%{name}.logrotate
 Source4:	%{name}.README
 
+Patch1:		%{name}-2.0.25_default-inspircd-conf.patch
+Patch2:		%{name}-2.0.25_default-modules-conf.patch
+
 BuildRequires:	perl(LWP::Simple)
 BuildRequires:	perl(LWP::Protocol::https)
 BuildRequires:	perl(Crypt::SSLeay)
@@ -80,6 +83,8 @@ inspircd.
 
 %prep
 %setup -q
+%patch1 -p1
+%patch2 -p1
 
 ## Enable all extras EXCEPT gnutls, mssql, and stdlib
 %build
@@ -252,6 +257,7 @@ fi
  * Ensured specific files are owned by inspircd
  * All rest owned by root
 - Added qrcode support
+- Added patches for default config files to remove "conf"
 
 * Sun Nov 12 2017 Louis Abel <louis@shootthej.net> - 2.0.25-1
 - Rebase to 2.0.25

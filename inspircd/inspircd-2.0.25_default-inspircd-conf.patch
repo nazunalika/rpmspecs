@@ -1,0 +1,38 @@
+--- docs/conf/inspircd.conf.example.orig	2018-01-17 18:57:56.868467112 -0700
++++ docs/conf/inspircd.conf.example	2018-01-17 18:58:44.403094989 -0700
+@@ -421,11 +421,11 @@
+ 
+ # This file has all the information about oper classes, types and o:lines.
+ # You *MUST* edit it.
+-<include file="conf/examples/opers.conf.example">
++<include file="examples/opers.conf.example">
+ 
+ # This file has all the information about server links and ulined servers.
+ # You *MUST* edit it if you intend to link servers.
+-<include file="conf/examples/links.conf.example">
++<include file="examples/links.conf.example">
+ 
+ #-#-#-#-#-#-#-#-#-#-  MISCELLANEOUS CONFIGURATION  -#-#-#-#-#-#-#-#-#-#
+ #                                                                     #
+@@ -960,7 +960,7 @@
+ # provide almost all the features of InspIRCd. :)                     #
+ #                                                                     #
+ # The default does nothing -- we include it for simplicity for you.   #
+-<include file="conf/examples/modules.conf.example">
++<include file="examples/modules.conf.example">
+ 
+ # Here are some pre-built modules.conf files that closely match the
+ # default configurations of some popular IRCd's. You still may want to
+@@ -972,10 +972,10 @@
+ # recommended that you make your own modules file based on modules.conf.example.
+ 
+ # Settings similar to UnrealIRCd defaults.
+-#<include file="conf/examples/modules/unrealircd.conf.example">
++#<include file="examples/modules/unrealircd.conf.example">
+ 
+ # Settings similar to Charybdis IRCd defaults.
+-#<include file="conf/examples/modules/charybdis.conf.example">
++#<include file="examples/modules/charybdis.conf.example">
+ 
+ 
+ #########################################################################
