@@ -12,7 +12,7 @@ Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
 License:	GPLv2
-URL:      http://www.inspircd.org
+URL:		http://www.inspircd.org
 Source0:	https://github.com/inspircd/inspircd/archive/v%{version}.tar.gz
 Source1:	%{name}.service
 Source2:	%{name}.init
@@ -32,6 +32,7 @@ BuildRequires:	sqlite-devel
 BuildRequires:	geoip-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
+BuildRequires:	qrencode-devel
 
 ## As far as I'm aware, the other packages can be installed
 ## when the modules are enabled. This is mentioned in the
@@ -199,7 +200,7 @@ fi
 %doc docs/COPYING docs/Doxyfile docs/rfc/* README.md README.info
 
 %{_sbindir}/%{name}
-%config(noreplace) %dir %attr(0700,-,-) %{_sysconfdir}/%{name}
+%dir %attr(0750,root,inspircd) %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/examples
 %{_sysconfdir}/%{name}/examples/*.example
 %dir %{_sysconfdir}/%{name}/examples/aliases
@@ -250,6 +251,7 @@ fi
 - Rearranged default permissions:
  * Ensured specific files are owned by inspircd
  * All rest owned by root
+- Added qrcode support
 
 * Sun Nov 12 2017 Louis Abel <louis@shootthej.net> - 2.0.25-1
 - Rebase to 2.0.25
