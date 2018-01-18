@@ -18,7 +18,7 @@ Summary:	Services for IRC Networks
 Group:		System Environment/Daemons
 License:	MIT
 URL:		https://atheme.net
-Source0:	https://github.com/%{name}/%{name}/releases/download/v%{major_version}.%{minor_version}.%{micro_version}/%{name}-%{major_version}.%{minor_version}.%{micro_version}.tar.bz2
+Source0:	https://github.com/%{name}/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.bz2
 Source1:	%{name}.service
 Source2:	%{name}.logrotate
 Source3:	%{name}.init
@@ -28,6 +28,7 @@ BuildRequires:	perl-ExtUtils-Embed
 BuildRequires:	openssl-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
+BuildRequires:	qrencode-devel
 
 Requires:	openssl
 Requires:	pcre
@@ -49,11 +50,22 @@ Requires:	initscripts
 Atheme is a feature-packed, extremely customisable IRC services
 daemon that is secure, stable and scalable.
 
+%package	libcore
+Summary:	Atheme IRC Services core library
+Group:		System Environment/Libraries
+
+%description	libcore
+Atheme is a feature-packed, extremely customisable IRC services
+daemon that is secure, stable and scalable.
+
 %package	devel
 Summary:	Atheme development headers
 Requires:	atheme = %{version}-%{release}
 
 %description	devel
+Atheme is a feature-packed, extremely customisable IRC services
+daemon that is secure, stable and scalable.
+
 This package contains the development headers required for developing
 against atheme.
 
@@ -66,7 +78,9 @@ against atheme.
 # installed. Until this is resolved, it is staying disabled.
 %build
 %configure \
-	--sysconfdir=%{_sysconfdir}/%{name} \
+	--sysconfdir="%{_sysconfdir}/%{name}" \
+  --bindir="%{_sbindir}" \
+  --docdir="%{_docdir}/%{name}" \
 	--enable-fhs-paths \
 	--enable-warnings \
 	--enable-contrib \
@@ -88,6 +102,9 @@ make install DESTDIR=%{buildroot}
 %{__mkdir} -p ${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d
 %{__install} -m 0644 %{SOURCE2} \
 	${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d/%{name}
+
+%{__mkdir} -p ${RPM_BUILD_ROOT}%{_sbindir}
+%{__mkdir} -p ${RPM_BUILD_ROOT}%{_var}/log
 
 # OS Specific
 %if 0%{?fedora} || 0%{?rhel} >= 7
@@ -146,29 +163,28 @@ fi
 
 
 %files
-%defattr(-, atheme, atheme, -)
+%defattr(-, root, root, -)
 %doc /usr/share/doc/%{name}/*
-%{_bindir}/%{name}-services
-%{_bindir}/dbverify
-%{_bindir}/ecdsakeygen
+%{_sbindir}/%{name}-services
+%{_sbindir}/dbverify
+%{_sbindir}/ecdsakeygen
 %dir %attr(0700,-,-) %{_sysconfdir}/%{name}
-%dir %attr(0700,-,-) %{_var}/log/%{name}
-%dir %attr(0700,-,-) %{_sharedstatedir}/%{name}
+%dir %attr(0700,atheme,atheme) %{_var}/log/%{name}
+%dir %attr(0700,atheme,atheme) %{_sharedstatedir}/%{name}
 %dir %{_datadir}/%{name}
 %dir %{_libdir}/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.motd
 %config(noreplace) %attr(-,root,root) %{_sysconfdir}/logrotate.d/%{name}
-%ghost %attr(0600,-,-) %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%ghost %attr(0640,-,-) %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 %{_sysconfdir}/%{name}/*.example
 %{_sysconfdir}/%{name}/*-example
 %{_libdir}/%{name}/*
 %{_datadir}/%{name}/*
-%{_libdir}/libathemecore.so
-%{_libdir}/libathemecore.so.1
-%{_libdir}/libathemecore.so.1.0.0
 %{_libdir}/libmowgli-2.so
 %{_libdir}/libmowgli-2.so.0
 %{_libdir}/libmowgli-2.so.0.0.0
+#%dir %{_prefix}/tmpfiles.d
+#%{_prefix}/lib/tmpfiles.d/atheme.conf
 
 # OS Specific
 %if 0%{?fedora} || 0%{?rhel} >= 7
@@ -177,6 +193,11 @@ fi
 %{_initddir}/%{name}
 %{_var}/run/%{name}
 %endif
+
+%files libcore
+%defattr(-,root,root)
+%{_libdir}/libathemecore.so.1
+%{_libdir}/libathemecore.so.1.0.0
 
 # development headers
 %files devel
@@ -191,10 +212,14 @@ fi
 %{_includedir}/libmowgli-2/*
 %{_libdir}/pkgconfig/atheme-services.pc
 %{_libdir}/pkgconfig/libmowgli-2.pc
+%{_libdir}/libathemecore.so
 
 %changelog
 * Wed Jan 17 2018 Louis Abel <louis@shootthej.net> - 7.2.9-2
 - Fedora 27 Rebuild
+- Separated libcore from main package
+- Changed permissions to be more restrictive
+- Rearranged libraries for devel package
 
 * Wed Jul 12 2017 Louis Abel <louis@shootthej.net> - 7.2.9-2
 - Fedora 26 Rebuild
