@@ -11,7 +11,7 @@ Information
 Why?
 ++++
 
-To be honest, I'm continuing my want to package ircd's and continuing my practice at RPM's. And compared to unrealircd, this so much easier to build, install, and configure. Plus, unlike other ircd's, it is not based on another. It's built from the ground up. 
+To be honest, I'm continuing my want to package ircd's and continuing my practice at RPM's. And compared to unrealircd, this so much easier to build, install, and configure. Plus, unlike other ircd's, it is not based on anothe daemon. It's built from the ground up. 
 
 What is the end goal?
 +++++++++++++++++++++

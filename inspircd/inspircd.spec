@@ -7,12 +7,12 @@
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
 License:	GPLv2
-URL:		http://www.inspircd.org/
+URL:      http://www.inspircd.org
 Source0:	https://github.com/inspircd/inspircd/archive/v%{version}.tar.gz
 Source1:	%{name}.service
 Source2:	%{name}.init
@@ -106,7 +106,7 @@ done
 	--prefix=%{_datadir}/%{name} \
 	--module-dir=%{_libdir}/%{name}/modules \
 	--config-dir=%{_sysconfdir}/%{name} \
-	--binary-dir=%{_bindir} \
+	--binary-dir=%{_sbindir} \
 	--data-dir=%{_sharedstatedir}/%{name} \
 	--log-dir=%{_var}/log/%{name} \
 	--enable-epoll \
@@ -195,11 +195,11 @@ fi
 %endif
 
 %files
-%defattr(-, inspircd, inspircd, -)
+%defattr(-, root, root, -)
 %doc docs/COPYING docs/Doxyfile docs/rfc/* README.md README.info
 
-%{_bindir}/%{name}
-%dir %attr(0700,-,-) %{_sysconfdir}/%{name}
+%{_sbindir}/%{name}
+%config(noreplace) %dir %attr(0700,-,-) %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/examples
 %{_sysconfdir}/%{name}/examples/*.example
 %dir %{_sysconfdir}/%{name}/examples/aliases
@@ -209,10 +209,9 @@ fi
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/modules
 %{_libdir}/%{name}/modules/*
-%dir %{_var}/log/%{name}
-%dir %{_sharedstatedir}/%{name}
+%dir %attr(0700,inspircd,inspircd) %{_var}/log/%{name}
+%dir %attr(-,inspircd,inspircd) %{_var}/lib/%{name}
 %dir %{_datadir}/%{name}
-%{_datadir}/%{name}/.gdbargs
 
 # Do I need perms on the symlinks?
 %dir %{_libexecdir}/%{name}
@@ -222,6 +221,7 @@ fi
 %{_datadir}/%{name}/logs
 %{_datadir}/%{name}/data
 %{_datadir}/%{name}/modules
+%attr(-,inspircd,inspircd) %{_datadir}/%{name}/.gdbargs
 %config(noreplace) %attr(-,root,root) %{_sysconfdir}/logrotate.d/%{name}
 
 # OS Specific
@@ -245,7 +245,13 @@ fi
 %{_includedir}/%{name}/threadengines/*.h
 
 %changelog
-* Wed Jul 12 2017 Louis Abel <louis@shootthej.net> - 2.0.25-1
+* Wed Jan 17 2018 Louis Abel <louis@shootthej.net> - 2.0.25-2
+- Rearranged bindir to sbindir
+- Rearranged default permissions:
+ * Ensured specific files are owned by inspircd
+ * All rest owned by root
+
+* Sun Nov 12 2017 Louis Abel <louis@shootthej.net> - 2.0.25-1
 - Rebase to 2.0.25
 - Build for Fedora 27
 

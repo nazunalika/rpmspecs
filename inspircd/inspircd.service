@@ -5,7 +5,7 @@ After=network.target remote-fs.target nss-lookup.target
 [Service]
 Type=simple
 User=inspircd
-ExecStart=/usr/bin/inspircd --nofork
+ExecStart=/usr/sbin/inspircd --nofork
 ExecReload=/bin/kill -HUP $MAINPID
 PrivateTmp=true
 
