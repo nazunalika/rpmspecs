@@ -83,8 +83,8 @@ inspircd.
 
 %prep
 %setup -q
-%patch1 -p1
-%patch2 -p1
+%patch1
+%patch2
 
 ## Enable all extras EXCEPT gnutls, mssql, and stdlib
 %build
