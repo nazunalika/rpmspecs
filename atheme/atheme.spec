@@ -168,7 +168,7 @@ fi
 %{_sbindir}/%{name}-services
 %{_sbindir}/dbverify
 %{_sbindir}/ecdsakeygen
-%dir %attr(0700,-,-) %{_sysconfdir}/%{name}
+%dir %attr(0750,-,-) %{_sysconfdir}/%{name}
 %dir %attr(0700,atheme,atheme) %{_var}/log/%{name}
 %dir %attr(0700,atheme,atheme) %{_sharedstatedir}/%{name}
 %dir %{_datadir}/%{name}
