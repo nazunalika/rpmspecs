@@ -11,7 +11,7 @@ Information
 Why?
 ++++
 
-To be honest, I'm continuing my want to package ircd's and continuing my practice at RPM's. And compared to unrealircd, this so much easier to build, install, and configure. Plus, unlike other ircd's, it is not based on anothe daemon. It's built from the ground up. 
+To be honest, I'm continuing my want to package ircd's and continuing my practice at RPM's. And compared to unrealircd, this so much easier to build, install, and configure. Plus, unlike other ircd's, it is not based on anothe daemon. It's built from the ground up. The RPM that the inspircd folks provide show no signs of a spec file and thus, it more than likely does not follow the fedora packaging guidelines. 
 
 What is the end goal?
 +++++++++++++++++++++
@@ -56,7 +56,7 @@ Did you make any changes to the code?
 
 Simple answer: No.
 
-Long answer: If you review my spec file, you will find that I do not modify the source code of InspIRCd. 
+Long answer: If you review my spec file, you will find that I do not modify the source code of InspIRCd. I make simple changes their example config files.
 
 So what did you change?
 +++++++++++++++++++++++
@@ -75,8 +75,8 @@ These are the things that differ from a regular compiled version of InspIRCd:
 
 * Enterprise Linux 7: systemd unit created
 * Enterprise Linux 7: utility script created to compensate for lack of initscript
-* InspIRCd perl script for debugging and other utilities kept in /usr/libexec/inspircd
 * Custom README in /usr/share/doc/inspircd that details the above and other information
+* Simple changes to their example configuration files (eg, inspircd.conf.example and modules.conf.example)
 
 **Notice: No code changes are made.**
 
@@ -124,6 +124,8 @@ Do you support other architectures/Can it build in $ARCH architecture?
 
 I only have x86 systems, so I'm unable to try it out on ARM, PPC64, etc. However, if you want to take my srpm and try, go for it. I would love to see the results. If it works, I will add the architecture to the copr repo (if available).
 
+I do plan on getting a raspberry pi at some point, which is ARM, and trying my hand at building it there. But that's in the future.
+
 I'd like to contribute to this or make a change...
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -147,6 +149,12 @@ Build
 
 * Download the build files in this git
 * Download the tar file from `their git <https://github.com/inspircd/inspircd/releases>`_
+* Download or clone the inspircd-extras repo, rename the directory to inspircd-extras-0.0.0+git$(date +%s)$COMMIT
+
+  * To get $COMMIT, you must clone the repo, go into the directory and run git describe HEAD --always
+
+* tar czvf inspircd-extras-0.0.0+git$(date +%s)$COMMIT.tar.gz inspircd-extras-0.0.0+git$(date +%s)$COMMIT
+* Change the extras_version variable in the spec file accordingly
 * Alternatively, you can download my source RPM from my copr.
 * Setup your tree for your build account if needed: rpmdev-setuptree
 * Place the files in the appropriate directories under ~/rpmbuild (all source files for the rpm go to SOURCES, .spec goes to SPECS)
@@ -170,7 +178,7 @@ Yes, I have a todo list.
 
   * This includes utilizing /etc/pki/tls/certs/make-dummy-cert to make a dummy certificate
   * This includes copying a configuration, motd, rules file that just works with warnings and information
-  * This **does not** include removing the "die" lines.
+  * This **does not** include removing the "die" lines.[#f5]_
 
 * Branch out some modules into seperate packages
 * Enable gnutls support (request by a user who uses my RPM)
@@ -179,5 +187,6 @@ Yes, I have a todo list.
 
 .. [#f1] stdlib could not be compiled on Enterprise Linux 6. I have also assumed because of an older GCC version on Enterprise Linux 7, it won't compile right either. And since I'm aiming to keep compatibility between multiple release versions, I won't make a patch to change c++11 to c++0x for Enterprise Linux. The module compiles, but with warnings that was concerning. I do not want that off chance of a crash or other weird issues to happen as a result of it being compiled into the build. Because of this, tre, pcre2, and posix are the regex engines implemented in this release. Also, for GnuTLS, why would you want to use that? Why would you even allow it to be an option? The fact they recommend it (because "performance") is a problem, in my opinion.
 .. [#f2] Majority of their scripts and things they do is all in perl. I'm all for perl, don't get me wrong. Having the configure script as perl was one thing, and I was able to understand what they were doing when I reviewed it. However, their "script" that gets generated after running `make' was meant to be in /etc/rc.d/init.d, and it wasn't exactly the prettiest thing I've seen. To ensure that it works properly with the init system of RHEL 6, I rewrote it from the ground up. *However* I ensured that I kept their perl script around in case I missed something from their script or if the "developer" functions were needed.
-.. [#f3] It's generally a good practice to try to make a service run without forking if at all possible. Using "forking" basically looks like the developer or admin didn't want to try to make the simple mode work. There are cases that forking must be used, this is not one of them.
+.. [#f3] It's generally a good practice to try to make a service run without forking if at all possible. Using "forking" basically looks like the developer or admin didn't want to try to make the simple mode work. This usually comes down to laziness or not reading the systemd documentation, or even their own man pages. In inspircd's case, there is a --nofork option. However, there are cases that forking must be used. This is not one of them.
 .. [#f4] All modules are compiled excluding ones that require c++11/c++0x to be compiled. Those will require the interested party to install the devel package and compile themselves.
+.. [#f5] The reason why I won't remove the die lines if I actually configure an example configuration for inspircd, is because the developer(s) of the software want you to actually go through the entire configuration file and read through it. The examples have a lot of comments and explain things in a fair amount of detail. The "die" lines are there to make sure you have read through the documentation enough to have setup your ircd properly. The die lines prevent inspircd from running at all. At first, it'll say that it's deprecated. Systemd will say 4/NOPERMISSION, which is VERY confusing. Once you have read the documentation and removed the "die" lines, it will start up and run without issues.

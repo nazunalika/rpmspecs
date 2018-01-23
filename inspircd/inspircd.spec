@@ -14,7 +14,7 @@
 %bcond_without geoip
 %bcond_without regex_engines
 
-#%define extras_version 0.0.0
+%global extras_version 0.0.0+git1516494055.068bd62
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
@@ -29,7 +29,10 @@ Source1:	%{name}.service
 Source2:	%{name}.init
 Source3:	%{name}.logrotate
 Source4:	%{name}.README
-#Source5:	%{name}-extras-%{extras_version}.tar.gz
+Source5:	%{name}-extras-%{extras_version}.tar.gz
+
+Provides:	%{name} = %{version}-%{release}
+Provides:	%{name}2
 
 Patch1:		%{name}-2.0.25_default-inspircd-conf.patch
 Patch2:		%{name}-2.0.25_default-modules-conf.patch
@@ -208,7 +211,7 @@ This provides the posix module for inspircd.
 %endif
 
 %prep
-%setup -q
+%setup -q -a 5
 %patch1
 %patch2
 
@@ -246,6 +249,79 @@ pushd src/modules/
 %{__ln_s} -v extra/m_ssl_openssl.cpp .
 
 # Extras will be done here as symlinks
+for x in \
+  m_accounthost.cpp \
+  m_antibear.cpp \
+  m_antibottler.cpp \
+  m_anticaps.cpp \
+  m_antirandom.cpp \
+  m_ascii.cpp \
+  m_authy.cpp \
+  m_autodrop.cpp \
+  m_autokick.cpp \
+  m_bannegate.cpp \
+  m_blockhighlight.cpp \
+  m_cap_chghost.cpp \
+  m_capnotify.cpp \
+  m_changecap.cpp \
+  m_ciphersuitejoin.cpp \
+  m_classban.cpp \
+  m_conn_banner.cpp \
+  m_conn_delayed_join.cpp \
+  m_conn_matchident.cpp \
+  m_conn_vhost.cpp \
+  m_custompenalty.cpp \
+  m_dccblock.cpp \
+  m_deferaccept.cpp \
+  m_disablemodes.cpp \
+  m_extbanredirect.cpp \
+  m_findxline.cpp \
+  m_flashpolicyd.cpp \
+  m_forceident.cpp \
+  m_fullversion.cpp \
+%if %{with geoip}
+  m_geoipban.cpp \
+%endif
+  m_hideidle.cpp \
+  m_identmeta.cpp \
+  m_invitenotify.cpp \
+  m_ircv3_sts.cpp \
+  m_ircxusernames.cpp \
+  m_join0.cpp \
+  m_joinoninvite.cpp \
+  m_joinpartsno.cpp \
+  m_joinpartspam.cpp \
+  m_lusersnoservices.cpp \
+  m_messagelength.cpp \
+  m_namedstats.cpp \
+  m_nickdelay.cpp \
+  m_nickin001.cpp \
+  m_nocreate.cpp \
+  m_noctcp_user.cpp \
+  m_nooponcreate.cpp \
+  m_nouidnick.cpp \
+  m_opmoderated.cpp \
+  m_override_umode.cpp \
+  m_pretenduser.cpp \
+  m_privdeaf.cpp \
+  m_qrcode.cpp \
+  m_quietban.cpp \
+  m_rehashsslsignal.cpp \
+  m_replaymsg.cpp \
+  m_require_auth.cpp \
+  m_requirectcp.cpp \
+  m_rotatelog.cpp \
+  m_rpg.cpp \
+  m_sha1.cpp \
+  m_slowmode.cpp \
+  m_solvemsg.cpp \
+  m_stats_unlinked.cpp \
+  m_svsoper.cpp \
+  m_timedstaticquit.cpp \
+  m_topicall.cpp \
+  m_totp.cpp ; do
+    %{__ln_s} -v ../../%{name}-extras-%{extras_version}/2.0/$x . 
+done
 
 popd
 
@@ -255,11 +331,11 @@ popd
 # In the future, we'll make these modules as part of an -extras package
 # Note: We will eventually cut this over into a master download from git
 #       and do our own symlinking/install.
-%if %{with all_plugins}
-for i in $(./modulemanager list | awk '/^m_/ && !/gnutls/ && !/re2/ {print $1}') 
-	do ./modulemanager install $i
-done
-%endif
+#%if %{with all_plugins}
+#for i in $(./modulemanager list | awk '/^m_/ && !/gnutls/ && !/re2/ {print $1}') 
+#	do ./modulemanager install $i
+#done
+#%endif
 
 # We're no longer supported :(
 %configure --disable-interactive \
