@@ -178,7 +178,7 @@ Yes, I have a todo list.
 
   * This includes utilizing /etc/pki/tls/certs/make-dummy-cert to make a dummy certificate
   * This includes copying a configuration, motd, rules file that just works with warnings and information
-  * This **does not** include removing the "die" lines.[#f5]_
+  * This **does not** include removing the "die" lines. [#f5]_
 
 * Branch out some modules into seperate packages
 * Enable gnutls support (request by a user who uses my RPM)

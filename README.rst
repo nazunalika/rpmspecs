@@ -43,12 +43,12 @@ Multiple reasons. The primary reason is that CentOS 6 still widely used, and wil
 When do you stop supporting a particular release?
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-For Enterprise Linux, usually a year before the expected EOL date. For Fedora, a month before the expected EOL date. The exception is when a newer major release is pushed later from its expected release.
+For Enterprise Linux, usually phase 3 of support or at most, a year before the expected EOL date. For Fedora, a month before the expected EOL date. The exception is when a newer major release is pushed later from its expected release.
 
 What if $package cannot be compiled on a release you support?
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-This is a good question and is unfortunately somewhat hard to answer. But I'll try my best here.
+This is a good question and is unfortunately somewhat hard to answer.
 
 If an RPM compiles on all releases I support and then doesn't during a version rebase, I typically try to figure out what changed or what I can do to ensure it builds properly, even if this requires logic to separate out the "problem" releases and what they need instead. 
 
