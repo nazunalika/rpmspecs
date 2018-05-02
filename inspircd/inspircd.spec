@@ -18,7 +18,7 @@
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -540,6 +540,9 @@ fi
 %endif
 
 %changelog
+* Wed May 02 2018 Louis Abel <louis@shootthej.net> - 2.0.25-4
+- Rebuild for Fedora 28
+
 * Thu Jan 18 2018 Louis Abel <louis@shootthej.net> - 2.0.25-3
 - Separated core modules into separate RPM's
 - Fixed logic
