@@ -42,6 +42,7 @@ BuildRequires:	perl(LWP::Protocol::https)
 BuildRequires:	perl(Crypt::SSLeay)
 BuildRequires:	perl(IO::Socket::SSL)
 BuildRequires:	perl(Getopt::Long)
+BuildRequires:  gcc
 BuildRequires:	gcc-c++
 BuildRequires:	openssl-devel
 BuildRequires:	tre-devel
