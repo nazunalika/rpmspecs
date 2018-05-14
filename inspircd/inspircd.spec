@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 2
 %global minor_version 0
-%global micro_version 25
+%global micro_version 26
 
 ## Define conditionals
 ## Change to "without" if needed
@@ -18,7 +18,7 @@
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	4%{?dist}
+Release:	1%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -541,6 +541,9 @@ fi
 %endif
 
 %changelog
+* Mon May 14 2018 Louis Abel <louis@shootthej.net> - 2.0.26-1
+- Rebase to 2.0.26
+
 * Wed May 02 2018 Louis Abel <louis@shootthej.net> - 2.0.25-4
 - Rebuild for Fedora 28
 
