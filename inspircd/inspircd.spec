@@ -14,7 +14,7 @@
 %bcond_without geoip
 %bcond_without regex_engines
 
-%global extras_version 0.0.0+git1516494055.068bd62
+%global extras_version 0.0.0+git1526330308.cf25848
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
@@ -35,7 +35,7 @@ Provides:	%{name} = %{version}-%{release}
 Provides:	%{name}2
 
 Patch1:		%{name}-2.0.25_default-inspircd-conf.patch
-Patch2:		%{name}-2.0.25_default-modules-conf.patch
+Patch2:		%{name}-2.0.26_default-modules-conf.patch
 
 BuildRequires:	perl(LWP::Simple)
 BuildRequires:	perl(LWP::Protocol::https)

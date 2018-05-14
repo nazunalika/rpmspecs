@@ -1,5 +1,5 @@
---- docs/conf/modules.conf.example.orig	2018-01-17 19:03:50.749771038 -0700
-+++ docs/conf/modules.conf.example	2018-01-17 19:05:40.839036847 -0700
+--- docs/conf/modules.conf.example.orig 2018-05-14 13:50:45.619297702 -0700
++++ docs/conf/modules.conf.example      2018-05-14 13:51:24.010795501 -0700
 @@ -315,7 +315,7 @@
  # specify some censor tags. See also:                                 #
  # https://wiki.inspircd.org/Modules/2.0/censor                        #
@@ -9,7 +9,7 @@
  
  #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
  # CGI:IRC module: Adds support for automatic host changing in CGI:IRC
-@@ -785,7 +785,7 @@
+@@ -790,7 +790,7 @@
  # specify below the path to the filter.conf file, or define some      #
  # <filter> tags.                                                      #
  #                                                                     #
@@ -18,16 +18,16 @@
  
  #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
  # Gecos ban: Implements extended ban 'r', which stops anyone matching
-@@ -844,7 +844,7 @@
+@@ -849,7 +849,7 @@
  #                                                                     #
  # If you specify to use the m_helpop.so module, then specify below    #
  # the path to the helpop.conf file.                                   #
--#<include file="conf/examples/inspircd.helpop-full.example">
-+#<include file="examples/inspircd.helpop-full.example">
+-#<include file="conf/examples/helpop-full.conf.example">
++#<include file="examples/helpop-full.conf.example">
  
  #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
  # Hide chans module: Allows users to hide their channels list from non-
-@@ -1299,7 +1299,7 @@
+@@ -1304,7 +1304,7 @@
  #                 Read the comment above <connect:allowmotdcolors> in #
  #                 inspircd.conf.example for details.                  #
  #                                                                     #
