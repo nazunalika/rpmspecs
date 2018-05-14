@@ -8,10 +8,6 @@ This is for the Atheme IRC Services
 Information
 -----------
 
-Why?
-++++
-
-To be honest, I'm continuing my want to continuing my practice at RPM's and also my IRC needed services.
 
 What is the end goal?
 +++++++++++++++++++++

@@ -74,7 +74,6 @@ These are the things that differ from a regular compiled version of InspIRCd:
   * initscript complies and works with /etc/rc.d/init.d/functions
 
 * Enterprise Linux 7: systemd unit created
-* Enterprise Linux 7: utility script created to compensate for lack of initscript
 * Custom README in /usr/share/doc/inspircd that details the above and other information
 * Simple changes to their example configuration files (eg, inspircd.conf.example and modules.conf.example)
 
