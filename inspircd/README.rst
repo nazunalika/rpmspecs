@@ -22,7 +22,6 @@ The end goal is to create an RPM that follows the Fedora Project RPM guidelines 
 * Use of rpmlint to check the rpm for warnings and errors
 * Use of mock to build the rpm (it **must** build in mock)
 * Use of systemd units for CentOS 7, Fedora, or related (eg, SystemV-style initscripts are forbidden and **should not** be used under any circumstances)
-* Use of SystemV-style initscripts or UpStart scripts for CentOS 6 or related if possible
 
 Please see the below for more information. 
 
@@ -38,11 +37,6 @@ But why an RPM?
 You should **never** compile on a package based system. It does not matter if it's RPM based (Red Hat, Fedora, CentOS, SuSE) or DEB based (Debian, Ubuntu). 
 
 This RPM is to help others who wish to run the latest InspIRCd on their CentOS or Fedora machines without compiling it themselves.
-
-Why are you trying to support CentOS 6 still?
-+++++++++++++++++++++++++++++++++++++++++++++
-
-Please read my main rpmspecs FAQ for this answer, and other answers to general RPM questions you may have.
 
 Do you have a repository that I can install your RPM?
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -68,11 +62,6 @@ These are the things that differ from a regular compiled version of InspIRCd:
 * Compiled with almost all extras (gnutls, mssql, and stdlib are excluded) [#f1]_
 * Compiled using epoll
 * logrotate configuration provided
-* Enterprise Linux 6: initscript created [#f2]_
-
-  * initscript contains basic service functions from the inspircd script 
-  * initscript complies and works with /etc/rc.d/init.d/functions
-
 * Enterprise Linux 7: systemd unit created
 * Custom README in /usr/share/doc/inspircd that details the above and other information
 * Simple changes to their example configuration files (eg, inspircd.conf.example and modules.conf.example)
@@ -185,7 +174,7 @@ Yes, I have a todo list.
 .. rubric:: Footnotes
 
 .. [#f1] stdlib could not be compiled on Enterprise Linux 6. I have also assumed because of an older GCC version on Enterprise Linux 7, it won't compile right either. And since I'm aiming to keep compatibility between multiple release versions, I won't make a patch to change c++11 to c++0x for Enterprise Linux. The module compiles, but with warnings that was concerning. I do not want that off chance of a crash or other weird issues to happen as a result of it being compiled into the build. Because of this, tre, pcre2, and posix are the regex engines implemented in this release. Also, for GnuTLS, why would you want to use that? Why would you even allow it to be an option? The fact they recommend it (because "performance") is a problem, in my opinion.
-.. [#f2] Majority of their scripts and things they do is all in perl. I'm all for perl, don't get me wrong. Having the configure script as perl was one thing, and I was able to understand what they were doing when I reviewed it. However, their "script" that gets generated after running `make' was meant to be in /etc/rc.d/init.d, and it wasn't exactly the prettiest thing I've seen. To ensure that it works properly with the init system of RHEL 6, I rewrote it from the ground up. *However* I ensured that I kept their perl script around in case I missed something from their script or if the "developer" functions were needed.
+.. [#f2] ARCHIVE: Majority of their scripts and things they do is all in perl. I'm all for perl, don't get me wrong. Having the configure script as perl was one thing, and I was able to understand what they were doing when I reviewed it. However, their "script" that gets generated after running `make' was meant to be in /etc/rc.d/init.d, and it wasn't exactly the prettiest thing I've seen. To ensure that it works properly with the init system of RHEL 6, I rewrote it from the ground up. *However* I ensured that I kept their perl script around in case I missed something from their script or if the "developer" functions were needed.
 .. [#f3] It's generally a good practice to try to make a service run without forking if at all possible. Using "forking" basically looks like the developer or admin didn't want to try to make the simple mode work. This usually comes down to laziness or not reading the systemd documentation, or even their own man pages. In inspircd's case, there is a --nofork option. However, there are cases that forking must be used. This is not one of them.
 .. [#f4] All modules are compiled excluding ones that require c++11/c++0x to be compiled. Those will require the interested party to install the devel package and compile themselves.
 .. [#f5] The reason why I won't remove the die lines if I actually configure an example configuration for inspircd, is because the developer(s) of the software want you to actually go through the entire configuration file and read through it. The examples have a lot of comments and explain things in a fair amount of detail. The "die" lines are there to make sure you have read through the documentation enough to have setup your ircd properly. The die lines prevent inspircd from running at all. At first, it'll say that it's deprecated. Systemd will say 4/NOPERMISSION, which is VERY confusing. Once you have read the documentation and removed the "die" lines, it will start up and run without issues.

@@ -18,7 +18,6 @@ The end goal is to create an RPM that follows the Fedora Project RPM guidelines 
 * Use of rpmlint to check the rpm for warnings and errors
 * Use of mock to build the rpm (it **must** build in mock)
 * Use of systemd units for CentOS 7, Fedora, or related (eg, SystemV-style initscripts are forbidden and **should not** be used under any circumstances)
-* Use of SystemV-style initscripts or UpStart scripts for CentOS 6 or related if possible
 
 Please see the below for more information. 
 
@@ -34,11 +33,6 @@ But why an RPM?
 You should **never** compile on a package based system. It does not matter if it's RPM based (Red Hat, Fedora, CentOS, SuSE) or DEB based (Debian, Ubuntu). 
 
 This RPM is to help others who wish to run the latest Atheme on their CentOS or Fedora machines without compiling it themselves.
-
-Why are you trying to support CentOS 6 still?
-+++++++++++++++++++++++++++++++++++++++++++++
-
-Please read my main rpmspecs FAQ for this answer.
 
 Do you have a repository that I can install your RPM?
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -61,10 +55,6 @@ These are the things that differ from a regular compiled version of Atheme:
 
 * Software compiled and installed according to the Fedora Packaging Guidelines
 * logrotate configuration provided
-* Enterprise Linux 6: initscript created
-
-  * initscript complies and works with /etc/rc.d/init.d/functions
-
 * Enterprise Linux 7: systemd unit created
 
 **Notice: No code changes are made.**
@@ -132,6 +122,6 @@ Build
 * mock -r dist-X-arch ~/rpmbuild/SRPMS/atheme-*.src.rpm 
 
   * Replace dist with fedora or centos
-  * Replace X with version number 6 or 7
+  * Replace X with version number 7 or otherwise
   * Replace arch with your appropriate architecture
 

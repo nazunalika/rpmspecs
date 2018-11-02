@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 7
 %global minor_version 2
-%global micro_version 9
+%global micro_version 10r2
 %global build_with_plugins 0
 
 # Using atheme-services as a name would be fine, but that would
@@ -12,16 +12,15 @@
 # If this were to become an official package, I would consider it.
 Name:		atheme
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	2%{?dist}
+Release:	1%{?dist}
 Summary:	Services for IRC Networks
 
 Group:		System Environment/Daemons
 License:	MIT
 URL:		https://atheme.net
-Source0:	https://github.com/%{name}/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.bz2
+Source0:	https://github.com/%{name}/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 Source1:	%{name}.service
 Source2:	%{name}.logrotate
-Source3:	%{name}.init
 
 BuildRequires:	cracklib-devel
 BuildRequires:	perl-ExtUtils-Embed
@@ -29,21 +28,19 @@ BuildRequires:	openssl-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
 BuildRequires:	qrencode-devel
+BuildRequires:  gettext-devel
+BuildRequires:  git
 
 Requires:	openssl
 Requires:	pcre
 Requires:	cracklib
 
 # OS Specific Requirements
-%if 0%{?fedora} || 0%{?rhel} >= 7
 BuildRequires:	systemd
 Requires(post):	systemd
 Requires(preun): systemd
 Requires(postun): systemd
 Requires:	systemd
-%else
-Requires:	initscripts
-%endif
 
 
 %description
@@ -73,14 +70,14 @@ against atheme.
 %setup -q -n %{name}-%{version}
 
 # I am explicitly calling ldap, perl, pcre, cracklib support
-# I am disabling internationalization as EL6 refuses to build
-# with it enabled. This happens even though gettext-devel is
-# installed. Until this is resolved, it is staying disabled.
 %build
+# They decided to do submodules. Very anti-pattern.
+git submodule init
+git submodule update
 %configure \
 	--sysconfdir="%{_sysconfdir}/%{name}" \
-  --bindir="%{_sbindir}" \
-  --docdir="%{_docdir}/%{name}" \
+	--bindir="%{_sbindir}" \
+	--docdir="%{_docdir}/%{name}" \
 	--enable-fhs-paths \
 	--enable-warnings \
 	--enable-contrib \
@@ -90,8 +87,7 @@ against atheme.
 	--with-pcre \
 	--with-perl \
 	--with-ldap \
-	--without-libmowgli \
-	--disable-nls
+	--without-libmowgli
 
 make %{?_smp_mflags}
 
@@ -107,15 +103,9 @@ make install DESTDIR=%{buildroot}
 %{__mkdir} -p ${RPM_BUILD_ROOT}%{_var}/log
 
 # OS Specific
-%if 0%{?fedora} || 0%{?rhel} >= 7
 %{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_unitdir}
 %{__install} -m 0644 %{SOURCE1} \
 	${RPM_BUILD_ROOT}%{_unitdir}/atheme.service
-%else
-%{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_initddir}
-%{__install} -m 0755 %{SOURCE3} ${RPM_BUILD_ROOT}%{_initddir}/%{name}
-%{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_localstatedir}/run/%{name}
-%endif
 
 # development headers
 %{__mkdir} -p ${RPM_BUILD_ROOT}/%{_includedir}/%{name}/{inline,protocol}
@@ -136,31 +126,13 @@ make install DESTDIR=%{buildroot}
 	-c 'Atheme IRC Services' %{name} 2>/dev/null || :
 
 %preun
-%if 0%{?fedora} || 0%{?rhel} >= 7
 %systemd_preun %{name}.service
-%else
-if [ $1 = 0 ]; then
-	[ -f /var/lock/subsys/%{name} ] && /sbin/service %{name} stop
-	[ -f %{_initddir}/%{name} ] && chkconfig --del %{name}
-fi
-%endif
 
 %post
-%if 0%{?fedora} || 0%{?rhel} >= 7
 %systemd_post %{name}.service
-%else
-/sbin/chkconfig --add %{name}
-%endif
 
 %postun
-%if 0%{?fedora} || 0%{?rhel} >= 7
 %systemd_postun_with_restart %{name}.service
-%else
-if [ "$1" -ge "1" ]; then
-	[ -f /var/lock/subsys/%{name} ] && /sbin/service %{name} restart >/dev/null 2>&1
-fi
-%endif
-
 
 %files
 %defattr(-, root, root, -)
@@ -168,7 +140,7 @@ fi
 %{_sbindir}/%{name}-services
 %{_sbindir}/dbverify
 %{_sbindir}/ecdsakeygen
-%dir %attr(0750,-,-) %{_sysconfdir}/%{name}
+%dir %attr(0750,root,atheme) %{_sysconfdir}/%{name}
 %dir %attr(0700,atheme,atheme) %{_var}/log/%{name}
 %dir %attr(0700,atheme,atheme) %{_sharedstatedir}/%{name}
 %dir %{_datadir}/%{name}
@@ -183,16 +155,18 @@ fi
 %{_libdir}/libmowgli-2.so
 %{_libdir}/libmowgli-2.so.0
 %{_libdir}/libmowgli-2.so.0.0.0
+%{_datadir}/locale/cy/LC_MESSAGES/atheme.mo
+%{_datadir}/locale/da/LC_MESSAGES/atheme.mo
+%{_datadir}/locale/de/LC_MESSAGES/atheme.mo
+%{_datadir}/locale/es/LC_MESSAGES/atheme.mo
+%{_datadir}/locale/fr/LC_MESSAGES/atheme.mo
+%{_datadir}/locale/ru/LC_MESSAGES/atheme.mo
+
 #%dir %{_prefix}/tmpfiles.d
 #%{_prefix}/lib/tmpfiles.d/atheme.conf
 
 # OS Specific
-%if 0%{?fedora} || 0%{?rhel} >= 7
 %{_unitdir}/%{name}.service
-%else
-%{_initddir}/%{name}
-%{_var}/run/%{name}
-%endif
 
 %files libcore
 %defattr(-,root,root)
@@ -215,6 +189,11 @@ fi
 %{_libdir}/libathemecore.so
 
 %changelog
+* Fri Nov 02 2018 Louis Abel <louis@shootthej.net> - 7.2.10r2-2
+- Rebase to 7.2.10-r2
+- Removed EL6 support
+- Added git steps because they decided to have submodules.
+
 * Wed Jan 17 2018 Louis Abel <louis@shootthej.net> - 7.2.9-2
 - Fedora 27 Rebuild
 - Separated libcore from main package

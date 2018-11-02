@@ -33,13 +33,6 @@ If you're starting out rpm packaging, please consider reading the following docu
 
 What you should get from the above is there are specific guidelines that should be followed, for maintainability, portability, and easy review. My RPM specs will have an FAQ of the "purpose". 
 
-Why are you still trying to support CentOS 6?
-+++++++++++++++++++++++++++++++++++++++++++++
-
-Multiple reasons. The primary reason is that CentOS 6 still widely used, and will more than likely be the case for a quite a few years. A secondary reason is a fight against systemd, and I respect a user's choice in what distribution they want to use.
-
-**I am in no way against one init system or another. I am just attempting to promote compatibility with other releases for the life of the release.** [#f1]_
-
 When do you stop supporting a particular release?
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
