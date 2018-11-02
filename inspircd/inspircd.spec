@@ -14,11 +14,11 @@
 %bcond_without geoip
 %bcond_without regex_engines
 
-%global extras_version 0.0.0+git1526330308.cf25848
+%global extras_version 0.0.0+git1541186470.33d64b6
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -52,11 +52,13 @@ BuildRequires:	geoip-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
 BuildRequires:	qrencode-devel
+BuildRequires:	gnutls-devel
 
 ## As far as I'm aware, the other packages can be installed
 ## when the modules are enabled. This is mentioned in the
 ## README. Essentially, there's no direct requirement for
-## the packages we compiled against.
+## the packages we compiled against. We are requring OpenSSL
+## by default, however.
 Requires:	openssl
 Requires:	perl(Getopt::Long)
 
@@ -110,6 +112,18 @@ Requires:	openssl-libs
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the openssl module for inspircd. It is recommended to install this
+module to allow secure connections to your irc server.
+
+%package	modules-gnutls
+Summary:	GnuTLS Module for Inspircd
+Group:		System Environment/Libraries
+Requires:	inspircd = %{version}-%{release}
+Requires:	gnutls
+
+%description	modules-gnutls
+Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
+
+This provides the gnutls module for inspircd. It is recommended to install this
 module to allow secure connections to your irc server.
 
 %if %{with sqlite}
@@ -216,7 +230,7 @@ This provides the posix module for inspircd.
 %patch1
 %patch2
 
-## Enable all extras EXCEPT gnutls, mssql, and stdlib
+## Enable all extras EXCEPT mssql and stdlib
 ## Doing symlinks instead of calling the configure script
 pushd src/modules/
 
@@ -248,6 +262,7 @@ pushd src/modules/
 %endif
 
 %{__ln_s} -v extra/m_ssl_openssl.cpp .
+%{__ln_s} -v extra/m_ssl_gnutls.cpp .
 
 # Extras will be done here as symlinks
 for x in \
@@ -256,26 +271,36 @@ for x in \
   m_antibottler.cpp \
   m_anticaps.cpp \
   m_antirandom.cpp \
+  m_apacheauth.cpp \
   m_ascii.cpp \
   m_authy.cpp \
   m_autodrop.cpp \
   m_autokick.cpp \
-  m_bannegate.cpp \
+  m_autooper.cpp \
+  m_badnicks.cpp \
   m_blockhighlight.cpp \
+  m_blockinvite.cpp \
+  m_blocklistmode.cpp \
   m_cap_chghost.cpp \
   m_capnotify.cpp \
+  m_cgiircban.cpp \
   m_changecap.cpp \
+  m_checkbans.cpp \
   m_ciphersuitejoin.cpp \
   m_classban.cpp \
+  m_conn_accounts.cpp \
   m_conn_banner.cpp \
   m_conn_delayed_join.cpp \
   m_conn_matchident.cpp \
+  m_conn_require.cpp \
   m_conn_vhost.cpp \
   m_custompenalty.cpp \
   m_dccblock.cpp \
   m_deferaccept.cpp \
   m_disablemodes.cpp \
+  m_extbanbanlist.cpp \
   m_extbanredirect.cpp \
+  m_extbanregex.cpp \
   m_findxline.cpp \
   m_flashpolicyd.cpp \
   m_forceident.cpp \
@@ -283,6 +308,7 @@ for x in \
 %if %{with geoip}
   m_geoipban.cpp \
 %endif
+  m_hash_gnutls.cpp \
   m_hideidle.cpp \
   m_identmeta.cpp \
   m_invitenotify.cpp \
@@ -294,6 +320,7 @@ for x in \
   m_joinpartspam.cpp \
   m_lusersnoservices.cpp \
   m_messagelength.cpp \
+  m_moderestrict.cpp \
   m_namedstats.cpp \
   m_nickdelay.cpp \
   m_nickin001.cpp \
@@ -301,26 +328,34 @@ for x in \
   m_noctcp_user.cpp \
   m_nooponcreate.cpp \
   m_nouidnick.cpp \
+  m_opban.cpp \
   m_opmoderated.cpp \
   m_override_umode.cpp \
   m_pretenduser.cpp \
   m_privdeaf.cpp \
   m_qrcode.cpp \
   m_quietban.cpp \
+  m_randomnotice.cpp \
   m_rehashsslsignal.cpp \
   m_replaymsg.cpp \
   m_require_auth.cpp \
   m_requirectcp.cpp \
+  m_restrictmsg_duration.cpp \
   m_rotatelog.cpp \
   m_rpg.cpp \
   m_sha1.cpp \
+  m_showfile.cpp \
   m_slowmode.cpp \
   m_solvemsg.cpp \
+  m_sslmodeuser.cpp \
+  m_sslstats_gnutls.cpp \
   m_stats_unlinked.cpp \
   m_svsoper.cpp \
   m_timedstaticquit.cpp \
   m_topicall.cpp \
-  m_totp.cpp ; do
+  m_totp.cpp \
+  m_xlinetools.cpp \
+  m_xmlsocket.cpp ; do 
     %{__ln_s} -v ../../%{name}-extras-%{extras_version}/2.0/$x . 
 done
 
@@ -341,6 +376,7 @@ popd
 # We're no longer supported :(
 %configure --disable-interactive \
 	--enable-openssl \
+	--enable-gnutls \
 	--prefix=%{_datadir}/%{name} \
 	--module-dir=%{_libdir}/%{name}/modules \
 	--config-dir=%{_sysconfdir}/%{name} \
@@ -463,6 +499,7 @@ fi
 %config(noreplace) %attr(-,root,root) %{_sysconfdir}/logrotate.d/%{name}
 
 # All excludes
+%exclude %{_libdir}/%{name}/modules/m_ssl_gnutls.so
 %exclude %{_libdir}/%{name}/modules/m_ssl_openssl.so
 %exclude %{_libdir}/%{name}/modules/m_ldap*.so
 %exclude %{_libdir}/%{name}/modules/m_regex_*.so
@@ -494,6 +531,10 @@ fi
 %files modules-openssl
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_ssl_openssl.so
+
+%files modules-gnutls
+%defattr(-, root, root, -)
+%{_libdir}/%{name}/modules/m_ssl_gnutls.so
 
 %if %{with ldap}
 %files modules-ldap
@@ -541,6 +582,10 @@ fi
 %endif
 
 %changelog
+* Fri Nov 02 2018 Louis Abel <louis@shootthej.net> - 2.0.26-3
+- Added gnutls support by request
+- Updated extras archive
+
 * Thu Nov 01 2018 Louis Abel <louis@shootthej.net> - 2.0.26-2
 - Updated modules
 - Rebuild for Fedora 29
