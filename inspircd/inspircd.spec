@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 2
 %global minor_version 0
-%global micro_version 26
+%global micro_version 27
 
 ## Define conditionals
 ## Change to "without" if needed
@@ -365,8 +365,8 @@ popd
 
 # Add all plugins
 # In the future, we'll make these modules as part of an -extras package
-# Note: We will eventually cut this over into a master download from git
-#       and do our own symlinking/install.
+# around the 3.0 release.
+
 #%if %{with all_plugins}
 #for i in $(./modulemanager list | awk '/^m_/ && !/gnutls/ && !/re2/ {print $1}') 
 #	do ./modulemanager install $i
@@ -582,6 +582,9 @@ fi
 %endif
 
 %changelog
+* Thu Nov 08 2018 Louis Abel <louis@shootthej.net> - 2.0.27-1
+- Upgrade to 2.0.27
+
 * Fri Nov 02 2018 Louis Abel <louis@shootthej.net> - 2.0.26-3
 - Added gnutls support by request
 - Updated extras archive

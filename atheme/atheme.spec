@@ -29,6 +29,8 @@ BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
 BuildRequires:	qrencode-devel
 BuildRequires:  gettext-devel
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  git
 
 Requires:	openssl
@@ -161,9 +163,6 @@ make install DESTDIR=%{buildroot}
 %{_datadir}/locale/es/LC_MESSAGES/atheme.mo
 %{_datadir}/locale/fr/LC_MESSAGES/atheme.mo
 %{_datadir}/locale/ru/LC_MESSAGES/atheme.mo
-
-#%dir %{_prefix}/tmpfiles.d
-#%{_prefix}/lib/tmpfiles.d/atheme.conf
 
 # OS Specific
 %{_unitdir}/%{name}.service
