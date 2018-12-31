@@ -1,5 +1,5 @@
---- docs/conf/modules.conf.example.orig 2018-05-14 13:50:45.619297702 -0700
-+++ docs/conf/modules.conf.example      2018-05-14 13:51:24.010795501 -0700
+--- docs/conf/modules.conf.example.orig	2018-12-31 10:03:16.033016668 -0700
++++ docs/conf/modules.conf.example	2018-12-31 10:04:26.440016308 -0700
 @@ -315,7 +315,7 @@
  # specify some censor tags. See also:                                 #
  # https://wiki.inspircd.org/Modules/2.0/censor                        #
@@ -27,7 +27,7 @@
  
  #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
  # Hide chans module: Allows users to hide their channels list from non-
-@@ -1304,7 +1304,7 @@
+@@ -1315,7 +1315,7 @@
  #                 Read the comment above <connect:allowmotdcolors> in #
  #                 inspircd.conf.example for details.                  #
  #                                                                     #

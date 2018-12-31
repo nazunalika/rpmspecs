@@ -18,7 +18,7 @@
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	3%{?dist}
+Release:	2%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -30,19 +30,25 @@ Source2:	%{name}.init
 Source3:	%{name}.logrotate
 Source4:	%{name}.README
 Source5:	%{name}-extras-%{extras_version}.tar.gz
+Source6:	%{name}.conf
+Source7:	%{name}.motd.centos
+Source8:	%{name}.rules
+Source9:	%{name}.modules
+Source10:	%{name}.opers
+Source11:	%{name}.motd.fedora
 
 Provides:	%{name} = %{version}-%{release}
 Provides:	%{name}2
 
-Patch1:		%{name}-2.0.25_default-inspircd-conf.patch
-Patch2:		%{name}-2.0.26_default-modules-conf.patch
+Patch1:		%{name}-2.0.27_default-inspircd-conf.patch
+Patch2:		%{name}-2.0.27_default-modules-conf.patch
 
 BuildRequires:	perl(LWP::Simple)
 BuildRequires:	perl(LWP::Protocol::https)
 BuildRequires:	perl(Crypt::SSLeay)
 BuildRequires:	perl(IO::Socket::SSL)
 BuildRequires:	perl(Getopt::Long)
-BuildRequires:  gcc
+BuildRequires:	gcc
 BuildRequires:	gcc-c++
 BuildRequires:	openssl-devel
 BuildRequires:	tre-devel
@@ -180,10 +186,10 @@ This provides the ldap module for inspircd.
 
 %if %{with geoip}
 %package        modules-geoip
-Summary:        GeoIP Backend Module for Inspircd
-Group:          System Environment/Libraries
-Requires:       inspircd = %{version}-%{release}
-Requires:       geoip
+Summary:	GeoIP Backend Module for Inspircd
+Group:		System Environment/Libraries
+Requires:	inspircd = %{version}-%{release}
+Requires:	geoip
 
 %description    modules-geoip
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
@@ -193,10 +199,10 @@ This provides the geoip module for inspircd.
 
 %if %{with regex_engines}
 %package        modules-pcre
-Summary:        pcre Regex Module for Inspircd
-Group:          System Environment/Libraries
-Requires:       inspircd = %{version}-%{release}
-Requires:       pcre
+Summary:	pcre Regex Module for Inspircd
+Group:		System Environment/Libraries
+Requires:	inspircd = %{version}-%{release}
+Requires:	pcre
 
 %description    modules-pcre
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
@@ -204,10 +210,10 @@ Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 This provides the pcre module for inspircd.
 
 %package        modules-tre
-Summary:        Tre Regex Module for Inspircd
-Group:          System Environment/Libraries
-Requires:       inspircd = %{version}-%{release}
-Requires:       tre
+Summary:	Tre Regex Module for Inspircd
+Group:		System Environment/Libraries
+Requires:	inspircd = %{version}-%{release}
+Requires:	tre
 
 %description    modules-tre
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
@@ -215,9 +221,9 @@ Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 This provides the tre module for inspircd.
 
 %package        modules-posix
-Summary:        POSIX Regex Module for Inspircd
-Group:          System Environment/Libraries
-Requires:       inspircd = %{version}-%{release}
+Summary:	POSIX Regex Module for Inspircd
+Group:		System Environment/Libraries
+Requires:	inspircd = %{version}-%{release}
 
 %description    modules-posix
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
@@ -433,6 +439,19 @@ popd
 %{__install} -m 0644 include/threadengines/*.h \
 	${RPM_BUILD_ROOT}%{_includedir}/%{name}/threadengines
 
+# default configurations
+%{__install} -m 0660 %{SOURCE6} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.conf
+%{__install} -m 0660 %{SOURCE8} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.rules
+%{__install} -m 0660 %{SOURCE9} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.modules
+%{__install} -m 0660 %{SOURCE10} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.opers
+
+# We only plan on building for Enterprise Linux and Fedora
+%if 0%{?rhel}
+%{__install} -m 0660 %{SOURCE7} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.motd
+%else
+%{__install} -m 0660 %{SOURCE11} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.motd
+%endif
+
 %pre
 # Since we are not an official Fedora build, we don't get an
 # assigned uid/gid. This may make it difficult when installed
@@ -470,7 +489,7 @@ fi
 
 %files
 %defattr(-, root, root, -)
-%doc docs/COPYING docs/Doxyfile docs/rfc/* README.md README.info
+%doc docs/LICENSE.txt docs/Doxyfile docs/rfc/* README.md README.info
 
 %{_sbindir}/%{name}
 %dir %attr(0750,root,inspircd) %{_sysconfdir}/%{name}
@@ -480,6 +499,14 @@ fi
 %{_sysconfdir}/%{name}/examples/aliases/*.example
 %dir %{_sysconfdir}/%{name}/examples/modules
 %{_sysconfdir}/%{name}/examples/modules/*.example
+
+# Default configurations
+%config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.conf
+%config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.motd
+%config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.rules
+%config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.opers
+%config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.modules
+
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/modules
 %{_libdir}/%{name}/modules/*
@@ -582,6 +609,12 @@ fi
 %endif
 
 %changelog
+* Mon Dec 31 2018 Louis Abel <louis@shootthej.net> - 2.0.27-2
+- Added default configs, kept die line to ensure proper config
+  is done
+- Changed patches to reflect the above change and kept examples
+- Redid patches for defaults (examples)
+
 * Thu Nov 08 2018 Louis Abel <louis@shootthej.net> - 2.0.27-1
 - Upgrade to 2.0.27
 
